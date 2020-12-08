@@ -1,0 +1,520 @@
+{
+  "columns":
+  ["", "Pipelined", "II", "Speculated iterations", "Details"]
+  , "children":
+  [
+    {
+      "name":"Kernel: infect_sweep"
+      , "data":
+      ["", "", ""]
+      , "debug":
+      [
+        [
+          {
+            "filename":"device/main.cl"
+            , "line":156
+          }
+        ]
+      ]
+      , "details":
+      [
+        {
+          "type":"brief"
+          , "text":"Single work-item execution"
+        }
+        , {
+          "type":"text"
+          , "text":"Single work-item execution"
+        }
+        , {
+          "type":"text"
+          , "text":"Fmax bottlenck block: None"
+        }
+        , {
+          "type":"text"
+          , "text":"See %L for more information"
+          , "links":
+          [
+            {
+              "guide":"Best Practices Guide : Kernels"
+              , "link":"https://www.intel.com/content/www/us/en/programmable/documentation/mwh1391807516407.html#ipp1476408832230"
+            }
+          ]
+        }
+      ]
+      , "children":
+      [
+        {
+          "name":"infect_sweep.B2"
+          , "data":
+          ["No", "n/a", "n/a"]
+          , "debug":
+          [
+            [
+              {
+                "filename":"device/main.cl"
+                , "line":167
+              }
+            ]
+          ]
+          , "details":
+          [
+            {
+              "type":"brief"
+              , "text":"Out-of-order inner loop"
+            }
+            , {
+              "type":"text"
+              , "text":"Loop not pipelined due to:"
+              , "details":
+              [
+                {
+                  "type":"text"
+                  , "text":"Loop iteration ordering: iterations of inner loop shown may get out of order with respect to the listed inner loop, as the number of iterations of the listed inner loop may be different for different iterations of this loop."
+                  , "details":
+                  [
+                    {
+                      "type":"text"
+                      , "text":"infect_sweep.B5 (%L)"
+                      , "links":
+                      [
+                        {
+                          "filename":"device/main.cl"
+                          , "line":"201"
+                        }
+                      ]
+                    }
+                    , {
+                      "type":"text"
+                      , "text":"infect_sweep.B4 (%L)"
+                      , "links":
+                      [
+                        {
+                          "filename":"device/main.cl"
+                          , "line":"178"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+            , {
+              "type":"text"
+              , "text":"Hyper-Optimized loop structure: n/a"
+            }
+            , {
+              "type":"text"
+              , "text":"Stallable instruction: n/a"
+            }
+            , {
+              "type":"text"
+              , "text":"Maximum concurrent iterations: 1 due to not being pipelined"
+            }
+            , {
+              "type":"text"
+              , "text":"See %L for more information"
+              , "links":
+              [
+                {
+                  "guide":"Best Practices Guide : Nested Loops"
+                  , "link":"https://www.intel.com/content/www/us/en/programmable/documentation/mwh1391807516407.html#rfr1469543500580"
+                }
+              ]
+            }
+          ]
+          , "children":
+          [
+            {
+              "name":"infect_sweep.B4"
+              , "data":
+              ["No", "n/a", "n/a"]
+              , "debug":
+              [
+                [
+                  {
+                    "filename":"device/main.cl"
+                    , "line":178
+                  }
+                ]
+              ]
+              , "details":
+              [
+                {
+                  "type":"brief"
+                  , "text":"Out-of-order inner loop"
+                }
+                , {
+                  "type":"text"
+                  , "text":"Loop not pipelined due to:"
+                  , "details":
+                  [
+                    {
+                      "type":"text"
+                      , "text":"Loop iteration ordering: iterations of inner loop shown may get out of order with respect to the listed inner loop, as the number of iterations of the listed inner loop may be different for different iterations of this loop."
+                      , "details":
+                      [
+                        {
+                          "type":"text"
+                          , "text":"infect_sweep.B5 (%L)"
+                          , "links":
+                          [
+                            {
+                              "filename":"device/main.cl"
+                              , "line":"201"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+                , {
+                  "type":"text"
+                  , "text":"Hyper-Optimized loop structure: n/a"
+                }
+                , {
+                  "type":"text"
+                  , "text":"Stallable instruction: n/a"
+                }
+                , {
+                  "type":"text"
+                  , "text":"Maximum concurrent iterations: 1 due to not being pipelined"
+                }
+                , {
+                  "type":"text"
+                  , "text":"See %L for more information"
+                  , "links":
+                  [
+                    {
+                      "guide":"Best Practices Guide : Nested Loops"
+                      , "link":"https://www.intel.com/content/www/us/en/programmable/documentation/mwh1391807516407.html#rfr1469543500580"
+                    }
+                  ]
+                }
+              ]
+              , "children":
+              [
+                {
+                  "name":"infect_sweep.B5"
+                  , "data":
+                  ["No", "n/a", "n/a"]
+                  , "debug":
+                  [
+                    [
+                      {
+                        "filename":"device/main.cl"
+                        , "line":201
+                      }
+                    ]
+                  ]
+                  , "details":
+                  [
+                    {
+                      "type":"brief"
+                      , "text":"Unresolvable exit condition"
+                    }
+                    , {
+                      "type":"text"
+                      , "text":"Loop not pipelined due to:"
+                      , "details":
+                      [
+                        {
+                          "type":"text"
+                          , "text":"Loop exit condition unresolvable at iteration initiation."
+                        }
+                      ]
+                    }
+                    , {
+                      "type":"text"
+                      , "text":"Hyper-Optimized loop structure: n/a"
+                    }
+                    , {
+                      "type":"text"
+                      , "text":"Stallable instruction: n/a"
+                    }
+                    , {
+                      "type":"text"
+                      , "text":"Maximum concurrent iterations: 1 due to not being pipelined"
+                    }
+                    , {
+                      "type":"text"
+                      , "text":"See %L for more information"
+                      , "links":
+                      [
+                        {
+                          "guide":"Best Practices Guide : Nested Loops"
+                          , "link":"https://www.intel.com/content/www/us/en/programmable/documentation/mwh1391807516407.html#rfr1469543500580"
+                        }
+                      ]
+                    }
+                  ]
+                  , "children":
+                  [
+                    {
+                      "name":"infect_sweep.B8"
+                      , "data":
+                      ["Yes", "~413", "n/a"]
+                      , "debug":
+                      [
+                        [
+                          {
+                            "filename":"device/main.cl"
+                            , "line":203
+                          }
+                        ]
+                      ]
+                      , "details":
+                      [
+                        {
+                          "type":"brief"
+                          , "text":"Data dependency"
+                        }
+                        , {
+                          "type":"text"
+                          , "text":"Most critical loop feedback path during scheduling:"
+                          , "details":
+                          [
+                            {
+                              "type":"text"
+                              , "text":"138.00 clock cycles Load Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"205"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"133.00 clock cycles Load Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"133.00 clock cycles Load Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"1.00 clock cycle 17-bit Select Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"203"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"1.00 clock cycle 16-bit Integer Compare Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"1.00 clock cycle 16-bit Integer Compare Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"0.88 clock cycles 32-bit Integer Add Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"0.28 clock cycles 1-bit And Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"203"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"0.28 clock cycles 1-bit Or Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"203"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"0.28 clock cycles 1-bit And Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"0.28 clock cycles 1-bit And Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"203"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"0.28 clock cycles 1-bit Or Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"203"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"0.28 clock cycles 1-bit And Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"0.28 clock cycles 1-bit And Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                        , {
+                          "type":"text"
+                          , "text":"Hyper-Optimized loop structure: n/a"
+                        }
+                        , {
+                          "type":"text"
+                          , "text":"II is an approximation due to the following stallable instructions:"
+                          , "details":
+                          [
+                            {
+                              "type":"text"
+                              , "text":"Load Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"205"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"Load Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                            , {
+                              "type":"text"
+                              , "text":"Load Operation (%L)"
+                              , "links":
+                              [
+                                {
+                                  "filename":"device/main.cl"
+                                  , "line":"207"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                        , {
+                          "type":"text"
+                          , "text":"Maximum concurrent iterations: Capacity of loop"
+                          , "details":
+                          [
+                            {
+                              "type":"text"
+                              , "text":"Use the %L viewer to estimate capacity"
+                              , "links":
+                              [
+                                {
+                                  "view":"Fmax II Report"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                        , {
+                          "type":"text"
+                          , "text":"See %L for more information"
+                          , "links":
+                          [
+                            {
+                              "guide":"Best Practices Guide : Loops in a Single Work-Item Kernel"
+                              , "link":"https://www.intel.com/content/www/us/en/programmable/documentation/mwh1391807516407.html#wfa1476380079940"
+                            }
+                          ]
+                        }
+                      ]
+                      , "children":
+                      [
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

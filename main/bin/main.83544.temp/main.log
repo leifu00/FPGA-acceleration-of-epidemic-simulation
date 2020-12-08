@@ -1,0 +1,7 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:211:25: error: use of undeclared identifier 'c2'
+                    f = c2;
+                        ^
+1 warning and 1 error generated.

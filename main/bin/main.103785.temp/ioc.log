@@ -1,0 +1,42 @@
+Using build options: -cl-std=CL1.2 -g -s "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl" -Xclang -O3 -Xclang -Wuninitialized -Xclang -DINTELFPGA_CL=201 -Xclang -ivfsoverlay-lib/root/intelFPGA_pro/20.1/hld/linux64/lib/libaoc_clang_decrypt.so -I "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device"
+Setting target instruction set architecture to: Default (Intel(R) Advanced Vector Extensions 2 (Intel(R) AVX2))
+Platform name: Intel(R) FPGA Emulation Platform for OpenCL(TM)
+Device name: Intel(R) FPGA Emulation Device
+Device version: OpenCL 1.2 
+Device vendor: Intel(R) Corporation
+Device profile: EMBEDDED_PROFILE
+Compilation started
+In file included from /home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:1:
+In file included from /home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:6:
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/InfStat.h:39:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+In file included from /home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:1:
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:20:2: error: must use 'enum' tag to refer to type 'InfStat'
+        InfStat inf;
+        ^
+        enum 
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:21:15: error: bit-fields are not supported in OpenCL
+        unsigned int esocdist_comply : 1;
+                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:22:15: error: bit-fields are not supported in OpenCL
+        unsigned int keyworker : 1;                             // also used to binary index cumI_keyworker[] and related arrays
+                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:23:15: error: bit-fields are not supported in OpenCL
+        unsigned int to_die : 1;
+                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:24:15: error: bit-fields are not supported in OpenCL
+        unsigned int detected : 1; //added hospitalisation flag: ggilani 28/10/2014, added flag to determined whether this person's infection is detected or not
+                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:40:15: error: bit-fields are not supported in OpenCL
+        unsigned int digitalContactTraced : 1;
+                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:41:15: error: bit-fields are not supported in OpenCL
+        unsigned int index_case_dct : 2;
+                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Person.h:42:15: error: bit-fields are not supported in OpenCL
+        unsigned int digitalContactTracingUser : 1;
+                     ^
+Compilation failed
+Failed to build program...: -15 (CL_COMPILE_PROGRAM_FAILURE)
+Compilation failed!

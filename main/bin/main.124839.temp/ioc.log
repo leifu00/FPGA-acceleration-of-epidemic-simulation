@@ -1,0 +1,26 @@
+Using build options: -cl-std=CL1.2 -g -s "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl" -Xclang -O3 -Xclang -Wuninitialized -Xclang -DINTELFPGA_CL=201 -Xclang -ivfsoverlay-lib/home/leifu/intelFPGA_pro/20.1/hld/linux64/lib/libaoc_clang_decrypt.so -I "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device"
+Setting target instruction set architecture to: Default (Intel(R) Advanced Vector Extensions 2 (Intel(R) AVX2))
+Platform name: Intel(R) FPGA Emulation Platform for OpenCL(TM)
+Device name: Intel(R) FPGA Emulation Device
+Device version: OpenCL 1.2 
+Device vendor: Intel(R) Corporation
+Device profile: EMBEDDED_PROFILE
+Compilation started
+In file included from /home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:1:
+In file included from /home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/Models.h:1:
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/InfStat.h:39:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:32:9: error: must use 'struct' tag to refer to type 'Person'
+        Person* si = Hosts[ci];
+        ^
+        struct 
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:32:17: error: initializing '__private struct Person *__private' with an expression of incompatible type '__global struct Person'
+        Person* si = Hosts[ci];
+                ^    ~~~~~~~~~
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:37:19: error: use of undeclared identifier 'cell'
+    printf("%d\n",cell->D);
+                  ^
+Compilation failed
+Failed to build program...: -15 (CL_COMPILE_PROGRAM_FAILURE)
+Compilation failed!

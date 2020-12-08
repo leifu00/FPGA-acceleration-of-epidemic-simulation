@@ -1,0 +1,13 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:250:45: error: expected expression
+                            infection_buf = {ci, i3, infect_type};
+                                            ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:266:72: error: no member named 'ci' in 'struct Infection'
+                StateT[index].inf_queue_infector[temp] = infection_buf.ci;
+                                                         ~~~~~~~~~~~~~ ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:267:72: error: no member named 'i3' in 'struct Infection'
+                StateT[index].inf_queue_infectee[temp] = infection_buf.i3;
+                                                         ~~~~~~~~~~~~~ ^
+1 warning and 3 errors generated.

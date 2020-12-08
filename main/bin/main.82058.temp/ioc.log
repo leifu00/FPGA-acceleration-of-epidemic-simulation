@@ -1,0 +1,20 @@
+Using build options: -cl-std=CL1.2 -g -s "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl" -Xclang -O3 -Xclang -Wuninitialized -Xclang -DINTELFPGA_CL=201 -Xclang -ivfsoverlay-lib/home/leifu/intelFPGA_pro/20.1/hld/linux64/lib/libaoc_clang_decrypt.so -I "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device"
+Setting target instruction set architecture to: Default (Intel(R) Advanced Vector Extensions 2 (Intel(R) AVX2))
+Platform name: Intel(R) FPGA Emulation Platform for OpenCL(TM)
+Device name: Intel(R) FPGA Emulation Device
+Device version: OpenCL 1.2 
+Device vendor: Intel(R) Corporation
+Device profile: EMBEDDED_PROFILE
+Compilation started
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:47:54: error: too few arguments provided to function-like macro invocation
+                    printf("here%d\n", HOST_ABSENT(i3));
+                                                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/macros.h:9:9: note: macro 'HOST_ABSENT' defined here
+#define HOST_ABSENT(x, ts) ((Hosts[x].absent_start_time <= ts) && (Hosts[x].absent_stop_time > ts))
+        ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:47:40: error: use of undeclared identifier 'HOST_ABSENT'
+                    printf("here%d\n", HOST_ABSENT(i3));
+                                       ^
+Compilation failed
+Failed to build program...: -15 (CL_COMPILE_PROGRAM_FAILURE)
+Compilation failed!

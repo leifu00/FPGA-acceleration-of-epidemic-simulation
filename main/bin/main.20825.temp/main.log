@@ -1,0 +1,9 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:260:1: error: expected '}'
+^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:166:1: note: to match this '{'
+{
+^
+1 warning and 1 error generated.

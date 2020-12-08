@@ -1,0 +1,7 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:230:45: error: use of undeclared identifier 'temp'
+                    StateT[index].current = temp + 1;
+                                            ^
+1 warning and 1 error generated.

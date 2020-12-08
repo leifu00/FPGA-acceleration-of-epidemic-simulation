@@ -1,0 +1,4 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:1:10: fatal error: 'host/src/models.h' file not found
+#include "host/src/models.h"
+         ^~~~~~~~~~~~~~~~~~~
+1 error generated.

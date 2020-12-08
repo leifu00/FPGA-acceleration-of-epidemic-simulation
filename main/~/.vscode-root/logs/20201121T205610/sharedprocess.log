@@ -1,0 +1,3 @@
+[2020-11-21 20:56:13.835] [sharedprocess] [info] main {"machineId":"b1a86f99868a88b0efca5051b58b86dd90b4aba29d606bdcc5a28f1a3294ddcd","windowId":2}
+[2020-11-21 20:56:13.871] [sharedprocess] [error] [File Watcher (node.js)] Error: ENOENT: no such file or directory, stat '/home/leifu/agent_based_epidemic_simulation_using_fpga/main/~/.vscode-root/User/snippets'
+[2020-11-21 20:56:53.849] [sharedprocess] [info] Starting to clean up unused language packs.

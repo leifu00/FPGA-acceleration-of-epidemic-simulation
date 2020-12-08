@@ -1,0 +1,23 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:230:45: error: use of undeclared identifier 'temp'
+                    StateT[index].current = temp + 1;
+                                            ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:231:54: error: use of undeclared identifier 'temp'
+                    StateT[index].inf_queue_infector[temp] = ci;
+                                                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:232:54: error: use of undeclared identifier 'temp'
+                    StateT[index].inf_queue_infectee[temp] = i3;
+                                                     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:233:57: error: use of undeclared identifier 'temp'
+                    StateT[index].inf_queue_infect_type[temp] = infect_type;
+                                                        ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:233:65: error: use of undeclared identifier 'infect_type'; did you mean 'infect_sweep'?
+                    StateT[index].inf_queue_infect_type[temp] = infect_type;
+                                                                ^~~~~~~~~~~
+                                                                infect_sweep
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:157:15: note: 'infect_sweep' declared here
+__kernel void infect_sweep( __global const struct Param *restrict P,
+              ^
+1 warning and 5 errors generated.

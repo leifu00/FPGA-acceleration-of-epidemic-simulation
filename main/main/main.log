@@ -1,0 +1,20 @@
+Compiler Command: aoc -rtl device/main.cl -report
+
+!===========================================================================
+! The report below may be inaccurate. A more comprehensive           
+! resource usage report can be found at main/reports/report.html    
+!===========================================================================
+
++--------------------------------------------------------------------+
+; Estimated Resource Usage Summary                                   ;
++----------------------------------------+---------------------------+
+; Resource                               + Usage                     ;
++----------------------------------------+---------------------------+
+; Logic utilization                      ;   39%                     ;
+; ALUTs                                  ;   22%                     ;
+; Dedicated logic registers              ;   18%                     ;
+; Memory blocks                          ;   65%                     ;
+; DSP blocks                             ;    0%                     ;
++----------------------------------------+---------------------------;
+System name: main
+

@@ -1,0 +1,8 @@
+{"name":"Info","rows":[
+{"classes":["info-table"],"data":["main"],"name":"Project Name"},
+{"data":["Arria 10, 10AX115S2F45I2SGES, dcp_bsp:pac_a10"],"name":"Target Family, Device, Board"},
+{"data":["19.4.0 Build 64"],"name":"AOC Version"},
+{"data":[""],"name":"Quartus Version"},
+{"data":["aoc -rtl device/main.cl -report"],"name":"Command"},
+{"data":["Tue Nov 24 22:54:11 2020"],"name":"Reports Generated At"}
+]}

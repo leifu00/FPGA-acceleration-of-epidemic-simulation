@@ -1,0 +1,57 @@
+Using build options: -cl-std=CL1.2 -g -s "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl" -Xclang -O3 -Xclang -Wuninitialized -Xclang -DINTELFPGA_CL=201 -Xclang -ivfsoverlay-lib/home/leifu/intelFPGA_pro/20.1/hld/linux64/lib/libaoc_clang_decrypt.so -I "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device"
+Setting target instruction set architecture to: Default (Intel(R) Advanced Vector Extensions 2 (Intel(R) AVX2))
+Platform name: Intel(R) FPGA Emulation Platform for OpenCL(TM)
+Device name: Intel(R) FPGA Emulation Device
+Device version: OpenCL 1.2 
+Device vendor: Intel(R) Corporation
+Device profile: EMBEDDED_PROFILE
+Compilation started
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:27:44: error: too few arguments provided to function-like macro invocation
+        double houseInf = ((HOST_ISOLATED(j) && (Hosts[j].digitalContactTraced != 1)) ? P.CaseIsolationHouseEffectiveness : 1.0)
+                                           ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/macros.h:6:9: note: macro 'HOST_ISOLATED' defined here
+#define HOST_ISOLATED(x, ts) ((Hosts[x].isolation_start_time + P->usCaseIsolationDelay <= ts) && (Hosts[x].isolation_start_time + P->usCaseIsolationDelay + P->usCaseIsolationDuration > ts))
+        ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:27:29: error: use of undeclared identifier 'HOST_ISOLATED'
+        double houseInf = ((HOST_ISOLATED(j) && (Hosts[j].digitalContactTraced != 1)) ? P.CaseIsolationHouseEffectiveness : 1.0)
+                            ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:27:90: error: member reference type 'const __global struct Param *__private' is a pointer; did you mean to use '->'?
+        double houseInf = ((HOST_ISOLATED(j) && (Hosts[j].digitalContactTraced != 1)) ? P.CaseIsolationHouseEffectiveness : 1.0)
+                                                                                        ~^
+                                                                                         ->
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:28:44: error: member reference type 'const __global struct Param *__private' is a pointer; did you mean to use '->'?
+                *       ((Hosts[j].digitalContactTraced==1) ? P.DCTCaseIsolationHouseEffectiveness : 1.0)
+                                                              ~^
+                                                               ->
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:29:25: error: too few arguments provided to function-like macro invocation
+                *       ((HOST_QUARANTINED(j) && (Hosts[j].digitalContactTraced != 1) && (!(HOST_ISOLATED(j))))? P.HQuarantineHouseEffect : 1.0)
+                                            ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/macros.h:7:9: note: macro 'HOST_QUARANTINED' defined here
+#define HOST_QUARANTINED(x, ts) ((HostsQuarantine[x].comply == 1) && (HostsQuarantine[x].start_time + P->usHQuarantineHouseDuration > ts) && (HostsQuarantine[x].start_time <= ts))
+        ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:29:7: error: use of undeclared identifier 'HOST_QUARANTINED'
+                *       ((HOST_QUARANTINED(j) && (Hosts[j].digitalContactTraced != 1) && (!(HOST_ISOLATED(j))))? P.HQuarantineHouseEffect : 1.0)
+                          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:29:88: error: too few arguments provided to function-like macro invocation
+                *       ((HOST_QUARANTINED(j) && (Hosts[j].digitalContactTraced != 1) && (!(HOST_ISOLATED(j))))? P.HQuarantineHouseEffect : 1.0)
+                                                                                                           ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/macros.h:6:9: note: macro 'HOST_ISOLATED' defined here
+#define HOST_ISOLATED(x, ts) ((Hosts[x].isolation_start_time + P->usCaseIsolationDelay <= ts) && (Hosts[x].isolation_start_time + P->usCaseIsolationDelay + P->usCaseIsolationDuration > ts))
+        ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:29:73: error: use of undeclared identifier 'HOST_ISOLATED'
+                *       ((HOST_QUARANTINED(j) && (Hosts[j].digitalContactTraced != 1) && (!(HOST_ISOLATED(j))))? P.HQuarantineHouseEffect : 1.0)
+                                                                                            ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:29:95: error: member reference type 'const __global struct Param *__private' is a pointer; did you mean to use '->'?
+                *       ((HOST_QUARANTINED(j) && (Hosts[j].digitalContactTraced != 1) && (!(HOST_ISOLATED(j))))? P.HQuarantineHouseEffect : 1.0)
+                                                                                                                 ~^
+                                                                                                                  ->
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:30:6: error: member reference type 'const __global struct Param *__private' is a pointer; did you mean to use '->'?
+                *       P.HouseholdDenomLookup[Households[Hosts[j].hh].nhr - 1] * personInf;
+                        ~^
+                         ->
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:30:7: error: no member named 'HouseholdDenomLookup' in 'struct Param'
+                *       P.HouseholdDenomLookup[Households[Hosts[j].hh].nhr - 1] * personInf;
+                        ~ ^
+Compilation failed
+Failed to build program...: -15 (CL_COMPILE_PROGRAM_FAILURE)
+Compilation failed!

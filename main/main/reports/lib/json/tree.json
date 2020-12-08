@@ -1,0 +1,90 @@
+{
+  "nodes":
+  [
+    {
+      "name":"infect_sweep"
+      , "id":2571164968
+      , "type":"kernel"
+      , "children":
+      [
+        {
+          "name":"infect_sweep.B7"
+          , "id":2571541680
+          , "type":"bb"
+        }
+        , {
+          "name":"infect_sweep.B0"
+          , "id":2571525280
+          , "type":"bb"
+        }
+        , {
+          "name":"infect_sweep.B4"
+          , "id":2571541440
+          , "type":"bb"
+          , "children":
+          [
+            {
+              "name":"Cluster 1"
+              , "id":2584846224
+              , "type":"cluster"
+            }
+          ]
+        }
+        , {
+          "name":"infect_sweep.B3"
+          , "id":2571541360
+          , "type":"bb"
+        }
+        , {
+          "name":"infect_sweep.B1"
+          , "id":2571526528
+          , "type":"bb"
+        }
+        , {
+          "name":"infect_sweep.B8"
+          , "id":2571541760
+          , "type":"bb"
+          , "children":
+          [
+            {
+              "name":"Cluster 3"
+              , "id":2586158704
+              , "type":"cluster"
+            }
+            , {
+              "name":"Cluster 2"
+              , "id":2585960512
+              , "type":"cluster"
+            }
+          ]
+        }
+        , {
+          "name":"infect_sweep.B5"
+          , "id":2571541520
+          , "type":"bb"
+        }
+        , {
+          "name":"infect_sweep.B6"
+          , "id":2571541600
+          , "type":"bb"
+        }
+        , {
+          "name":"infect_sweep.B2"
+          , "id":2571526608
+          , "type":"bb"
+          , "children":
+          [
+            {
+              "name":"Cluster 0"
+              , "id":2582702576
+              , "type":"cluster"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  , "links":
+  [
+  ]
+}

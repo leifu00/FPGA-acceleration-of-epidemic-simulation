@@ -1,0 +1,10 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:235:43: error: no member named 'current' in 'struct PopVar'
+                        int temp = status.current;
+                                   ~~~~~~ ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:253:36: error: no member named 'current' in 'struct PopVar'
+                            status.current = temp + 1;
+                            ~~~~~~ ^
+1 warning and 2 errors generated.

@@ -1,0 +1,73 @@
+# (c) 1992-2020 Intel Corporation.                            
+# Intel, the Intel logo, Intel, MegaCore, NIOS II, Quartus and TalkBack words    
+# and logos are trademarks of Intel Corporation or its subsidiaries in the U.S.  
+# and/or other countries. Other marks and brands may be claimed as the property  
+# of others. See Trademarks on intel.com for full list of Intel trademarks or    
+# the Trademarks & Brands Names Database (if Intel) or See www.Intel.com/legal (if Altera) 
+# Your use of Intel Corporation's design tools, logic functions and other        
+# software and tools, and its AMPP partner logic functions, and any output       
+# files any of the foregoing (including device programming or simulation         
+# files), and any associated documentation or information are expressly subject  
+# to the terms and conditions of the Altera Program License Subscription         
+# Agreement, Intel MegaCore Function License Agreement, or other applicable      
+# license agreement, including, without limitation, that your use is for the     
+# sole purpose of programming logic devices manufactured by Intel and sold by    
+# Intel or its authorized distributors.  Please refer to the applicable          
+# agreement for further details.                                                 
+
+source flat.qsf
+              
+set_global_assignment -name TOP_LEVEL_ENTITY top
+
+#============================================================
+# Partitions
+#============================================================
+# Top partition
+set_instance_assignment -name PARTITION root_partition -to "|"
+
+# kernel partition
+set_instance_assignment -name PARTITION kernel -to "freeze_wrapper_inst|pr_region_inst"
+set_instance_assignment -name PARTIAL_RECONFIGURATION_PARTITION ON -to freeze_wrapper_inst|pr_region_inst
+set_global_assignment -name REVISION_TYPE PR_BASE
+
+set_global_assignment -name ENABLE_PR_PINS OFF
+set_global_assignment -name ENABLE_INIT_DONE_OUTPUT OFF
+
+#============================================================
+# PR region definition for the Kernel
+#============================================================
+
+set_instance_assignment -name REGION_NAME freeze_wrapper_inst|pr_region_inst -to freeze_wrapper_inst|pr_region_inst
+set_instance_assignment -name CORE_ONLY_PLACE_REGION ON -to freeze_wrapper_inst|pr_region_inst
+set_instance_assignment -name RESERVE_PLACE_REGION ON -to freeze_wrapper_inst|pr_region_inst
+set_instance_assignment -name PLACE_REGION "X141 Y0 X143 Y16;X19 Y0 X22 Y102;X35 Y0 X45 Y167;X30 Y0 X34 Y185;X46 Y0 X55 Y185;X23 Y0 X29 Y224;X56 Y0 X57 Y224;X63 Y0 X140 Y224;X144 Y0 X224 Y224;X58 Y6 X62 Y224;X141 Y17 X142 Y17;X141 Y18 X143 Y224;X19 Y128 X22 Y224;X30 Y186 X55 Y224" -to freeze_wrapper_inst|pr_region_inst
+set_instance_assignment -name ROUTE_REGION "X0 Y0 X224 Y224" -to freeze_wrapper_inst|pr_region_inst
+set_instance_assignment -name RESERVE_ROUTE_REGION OFF -to freeze_wrapper_inst|pr_region_inst
+
+# location constraint these global buffers and synchronization register to help recovery timing 
+set_location_assignment CLKCTRL_3A_G_I21 -to freeze_wrapper_inst|acl_reset_handler_inst|GEN_SYNCHRONIZER.synchronizer_body[1]~CLKENA0
+set_location_assignment FF_X143_Y17_N26 -to freeze_wrapper_inst|acl_reset_handler_inst|GEN_SYNCHRONIZER.synchronizer_body[1]
+set_location_assignment CLKCTRL_3A_P15_I6 -to board_inst|kclk_periph|periph_clkena_0|clkena
+
+set_instance_assignment -name REGION_NAME board_inst|mem|ddr4|pipe_stage_ddr4a_dimm_post_4th -to board_inst|mem|ddr4|pipe_stage_ddr4a_dimm_post_4th
+set_instance_assignment -name PLACE_REGION "X0 Y150 X18 Y224;X35 Y168 X45 Y185" -to board_inst|mem|ddr4|pipe_stage_ddr4a_dimm_post_4th
+set_instance_assignment -name RESERVE_PLACE_REGION OFF -to board_inst|mem|ddr4|pipe_stage_ddr4a_dimm_post_4th
+set_instance_assignment -name CORE_ONLY_PLACE_REGION OFF -to board_inst|mem|ddr4|pipe_stage_ddr4a_dimm_post_4th
+
+# location constrain the PCIe write_data_mover_2 module to help improve timing closure
+set_instance_assignment -name REGION_NAME board_inst|pcie|pcie|g_avmm_256_dma.avmm_256_dma.altpcieav_256_app|write_data_mover_2 -to board_inst|pcie|pcie|g_avmm_256_dma.avmm_256_dma.altpcieav_256_app|write_data_mover_2
+set_instance_assignment -name PLACE_REGION "X13 Y77 X18 Y102;X13 Y103 X22 Y113;X19 Y114 X22 Y127;X0 Y114 X18 Y224" -to board_inst|pcie|pcie|g_avmm_256_dma.avmm_256_dma.altpcieav_256_app|write_data_mover_2
+set_instance_assignment -name RESERVE_PLACE_REGION OFF -to board_inst|pcie|pcie|g_avmm_256_dma.avmm_256_dma.altpcieav_256_app|write_data_mover_2
+set_instance_assignment -name CORE_ONLY_PLACE_REGION OFF -to board_inst|pcie|pcie|g_avmm_256_dma.avmm_256_dma.altpcieav_256_app|write_data_mover_2
+
+# needed for BAK flow (msf files need to be generated in quartus_fit stage of BAK flow compile)
+set_global_assignment -name INI_VARS "force_msf_write=on"
+ 
+
+set_global_assignment -name QIP_FILE kernel_system.qip
+
+set_global_assignment -name SOURCE_TCL_SCRIPT_FILE ip_include.tcl
+
+set_instance_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION OFF -to *_NO_SHIFT_REG*
+
+set_global_assignment -name VERILOG_CONSTANT_LOOP_LIMIT 10000

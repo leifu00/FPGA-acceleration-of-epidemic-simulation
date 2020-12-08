@@ -1,0 +1,45 @@
+Using build options: -cl-std=CL1.2 -g -s "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl" -Xclang -O3 -Xclang -Wuninitialized -Xclang -DINTELFPGA_CL=201 -Xclang -ivfsoverlay-lib/home/leifu/intelFPGA_pro/20.1/hld/linux64/lib/libaoc_clang_decrypt.so -I "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device"
+Setting target instruction set architecture to: Default (Intel(R) Advanced Vector Extensions 2 (Intel(R) AVX2))
+Platform name: Intel(R) FPGA Emulation Platform for OpenCL(TM)
+Device name: Intel(R) FPGA Emulation Device
+Device version: OpenCL 1.2 
+Device vendor: Intel(R) Corporation
+Device profile: EMBEDDED_PROFILE
+Compilation started
+In file included from /home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:1:
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/models.h:43:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:64:59: warning: '/*' within block comment
+        if (f) { s3 *= P->PlaceCloseHouseholdRelContact; }/* NumPCD++;}*/ //// if people in your household are absent from places, person si/ci is more infectious to them, as they spend more time at home.
+                                                          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:66:23: error: use of undeclared identifier 'l'
+        for (int i3 = l; i3 < m; i3++) //// loop over all people in household (note goes from l to m - 1)
+                      ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:66:31: error: use of undeclared identifier 'm'
+        for (int i3 = l; i3 < m; i3++) //// loop over all people in household (note goes from l to m - 1)
+                              ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:70:88: error: use of undeclared identifier 'ci'
+                double personSusc = P->WAIFW_Matrix[HOST_AGE_GROUP(i3)][HOST_AGE_GROUP(ci)]
+                                                                                       ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:82:28: error: use of undeclared identifier 's3'
+                double s = s3 * houseSusc;
+                           ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:92:46: error: use of undeclared identifier 'ci'
+                        Hosts[i3].infector = ci; //// assign person ci as infector of person i3
+                                             ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:99:77: error: use of undeclared identifier 'si'
+                        short int infect_type = 1 + INFECT_TYPE_MASK * (1 + si.infect_type / INFECT_TYPE_MASK);
+                                                                            ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:100:49: error: use of undeclared identifier 'ci'
+                        struct Infection tmp = {ci, i3, infect_type};
+                                                ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:107:2: error: expected identifier or '('
+*/
+ ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:109:1: error: extraneous closing brace ('}')
+}
+^
+Compilation failed
+Failed to build program...: -15 (CL_COMPILE_PROGRAM_FAILURE)
+Compilation failed!

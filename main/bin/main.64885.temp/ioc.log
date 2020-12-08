@@ -1,0 +1,21 @@
+Using build options: -cl-std=CL1.2 -g -s "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl" -Xclang -O3 -Xclang -Wuninitialized -Xclang -DINTELFPGA_CL=201 -Xclang -ivfsoverlay-lib/home/leifu/intelFPGA_pro/20.1/hld/linux64/lib/libaoc_clang_decrypt.so -I "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device"
+Setting target instruction set architecture to: Default (Intel(R) Advanced Vector Extensions 2 (Intel(R) AVX2))
+Platform name: Intel(R) FPGA Emulation Platform for OpenCL(TM)
+Device name: Intel(R) FPGA Emulation Device
+Device version: OpenCL 1.2 
+Device vendor: Intel(R) Corporation
+Device profile: EMBEDDED_PROFILE
+Compilation started
+In file included from /home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:3:
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/param.h:5:8: error: redefinition of 'Param'
+struct Param
+       ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/models.h:4:8: note: previous definition is here
+struct Param
+       ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:7:57: error: parameter may not be qualified with an address space
+__kernel void infect_sweep( __global const struct Param P,
+                                                        ^
+Compilation failed
+Failed to build program...: -15 (CL_COMPILE_PROGRAM_FAILURE)
+Compilation failed!

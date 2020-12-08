@@ -1,0 +1,108 @@
+Using build options: -cl-std=CL1.2 -g -s "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl" -Xclang -O3 -Xclang -Wuninitialized -Xclang -DINTELFPGA_CL=201 -Xclang -ivfsoverlay-lib/root/intelFPGA_pro/20.1/hld/linux64/lib/libaoc_clang_decrypt.so -I "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device"
+Setting target instruction set architecture to: Default (Intel(R) Advanced Vector Extensions 2 (Intel(R) AVX2))
+Platform name: Intel(R) FPGA Emulation Platform for OpenCL(TM)
+Device name: Intel(R) FPGA Emulation Device
+Device version: OpenCL 1.2 
+Device vendor: Intel(R) Corporation
+Device profile: EMBEDDED_PROFILE
+Compilation started
+In file included from /home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:1:
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:14:1: error: unknown type name 'constexpr'
+constexpr double PI = 3.1415926535; // full double precision: 3.14159265358979323846
+^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:23:1: error: unknown type name 'constexpr'
+constexpr int NMI = 1852;
+^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:30:1: error: unknown type name 'constexpr'
+constexpr int ARCMINUTES_PER_DEGREE = 60;
+^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:37:1: error: unknown type name 'constexpr'
+constexpr int DEGREES_PER_TURN = 360;
+^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:45:1: error: unknown type name 'constexpr'
+constexpr int EARTH_CIRCUMFERENCE = NMI * ARCMINUTES_PER_DEGREE * DEGREES_PER_TURN;
+^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:50:1: error: unknown type name 'constexpr'
+constexpr double EARTH_DIAMETER = EARTH_CIRCUMFERENCE / PI;
+^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:64:1: error: unknown type name 'constexpr'
+constexpr double EARTHRADIUS = EARTH_DIAMETER / 2;
+^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:66:11: error: program scope variable must reside in constant address space
+const int OUTPUT_DIST_SCALE = 1000;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:67:11: error: program scope variable must reside in constant address space
+const int MAX_PLACE_SIZE = 20000;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:68:11: error: program scope variable must reside in constant address space
+const int MAX_NUM_SEED_LOCATIONS = 10000;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:70:11: error: program scope variable must reside in constant address space
+const int CDF_RES = 20;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:71:11: error: program scope variable must reside in constant address space
+const int INFPROF_RES = 56;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:73:11: error: program scope variable must reside in constant address space
+const int NUM_AGE_GROUPS = 17;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:74:11: error: program scope variable must reside in constant address space
+const int AGE_GROUP_WIDTH = 5;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:75:11: error: program scope variable must reside in constant address space
+const int DAYS_PER_YEAR = 364;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:76:11: error: program scope variable must reside in constant address space
+const int INFECT_TYPE_MASK = 16;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:77:11: error: program scope variable must reside in constant address space
+const int MAX_GEN_REC = 20;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:78:11: error: program scope variable must reside in constant address space
+const int MAX_SEC_REC = 500;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:79:11: error: program scope variable must reside in constant address space
+const int INF_QUEUE_SCALE = 5;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:80:11: error: program scope variable must reside in constant address space
+const int MAX_TRAVEL_TIME = 14;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:82:11: error: program scope variable must reside in constant address space
+const int MAX_INFECTIOUS_STEPS = 2550;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:84:11: error: program scope variable must reside in constant address space
+const int MAX_NUM_THREADS = 96;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:85:11: error: program scope variable must reside in constant address space
+const int CACHE_LINE_SIZE = 64;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:88:11: error: program scope variable must reside in constant address space
+const int MAX_CONTACTS = 500;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:90:11: error: program scope variable must reside in constant address space
+const int MAX_DUR_IMPORT_PROFILE = 10245;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:92:11: error: program scope variable must reside in constant address space
+const int MAX_AIRPORTS = 5000;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:93:11: error: program scope variable must reside in constant address space
+const int NNA = 10;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:96:11: error: program scope variable must reside in constant address space
+const int MIN_HOTELS_PER_AIRPORT = 20;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:97:11: error: program scope variable must reside in constant address space
+const int HOTELS_PER_1000PASSENGER = 10;
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/Constants.h:99:11: error: program scope variable must reside in constant address space
+const int MAX_NUM_INTERVENTION_CHANGE_TIMES = 100; // may want to make this intervention-specifc, but keep simple for now.
+          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:7:43: warning: declaration of 'struct Param' will not be visible outside of this function
+                         __private struct Param *P)
+                                          ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:7:50: error: pointer arguments to kernel functions must reside in '__global', '__constant' or '__local' address space
+                         __private struct Param *P)
+                                                 ^
+Compilation failed
+Failed to build program...: -15 (CL_COMPILE_PROGRAM_FAILURE)
+Compilation failed!

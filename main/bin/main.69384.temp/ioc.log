@@ -1,0 +1,23 @@
+Using build options: -cl-std=CL1.2 -g -s "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl" -Xclang -O3 -Xclang -Wuninitialized -Xclang -DINTELFPGA_CL=201 -Xclang -ivfsoverlay-lib/home/leifu/intelFPGA_pro/20.1/hld/linux64/lib/libaoc_clang_decrypt.so -I "/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device"
+Setting target instruction set architecture to: Default (Intel(R) Advanced Vector Extensions 2 (Intel(R) AVX2))
+Platform name: Intel(R) FPGA Emulation Platform for OpenCL(TM)
+Device name: Intel(R) FPGA Emulation Device
+Device version: OpenCL 1.2 
+Device vendor: Intel(R) Corporation
+Device profile: EMBEDDED_PROFILE
+Compilation started
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:21:44: error: passing 'const __global struct Param *__private' to parameter of type '__private struct Param *' changes address space of pointer
+        printf("%f\n", CalcPersonInf(1, 2, P, Hosts));
+                                           ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/calculate.h:11:67: note: passing argument to parameter 'P' here
+double CalcPersonInf(int j, unsigned short int ts, struct Param * P, struct Person *Hosts);
+                                                                  ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:21:47: error: passing 'const __global struct Person *__private' to parameter of type '__private struct Person *' changes address space of pointer
+        printf("%f\n", CalcPersonInf(1, 2, P, Hosts));
+                                              ^~~~~
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/host/src/calculate.h:11:85: note: passing argument to parameter 'Hosts' here
+double CalcPersonInf(int j, unsigned short int ts, struct Param * P, struct Person *Hosts);
+                                                                                    ^
+Compilation failed
+Failed to build program...: -15 (CL_COMPILE_PROGRAM_FAILURE)
+Compilation failed!

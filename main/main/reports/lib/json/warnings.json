@@ -1,0 +1,6 @@
+{"rows":[
+{"debug":[[{"filename":"/home/u46663/agent_based_epidemic_simulation_using_fpga/main/device/main.cl"
+,"line":75}]]
+,"details":["/home/u46663/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension"]
+,"name":"scoped enumerations are a C++11 extension"}
+]}

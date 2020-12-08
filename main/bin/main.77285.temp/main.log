@@ -1,0 +1,24 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:206:48: error: no member named 'Place5Links' in 'struct Person'; did you mean 'PlaceLinks'?
+                    PLACE_CLOSED(i2, Hosts[i3].Place5Links[i2], 5);
+                                               ^~~~~~~~~~~
+                                               PlaceLinks
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:10:48: note: expanded from macro 'PLACE_CLOSED'
+#define PLACE_CLOSED(x, y, n) ((Places[x * n + y].close_start_time <= ts) && (Places[x * n + y].close_end_time > ts))
+                                               ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:102:6: note: 'PlaceLinks' declared here
+        int PlaceLinks[4];
+            ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:206:48: error: no member named 'Place5Links' in 'struct Person'; did you mean 'PlaceLinks'?
+                    PLACE_CLOSED(i2, Hosts[i3].Place5Links[i2], 5);
+                                               ^~~~~~~~~~~
+                                               PlaceLinks
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:10:94: note: expanded from macro 'PLACE_CLOSED'
+#define PLACE_CLOSED(x, y, n) ((Places[x * n + y].close_start_time <= ts) && (Places[x * n + y].close_end_time > ts))
+                                                                                             ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:102:6: note: 'PlaceLinks' declared here
+        int PlaceLinks[4];
+            ^
+1 warning and 2 errors generated.

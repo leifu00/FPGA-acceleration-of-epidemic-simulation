@@ -1,0 +1,7 @@
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:75:6: warning: scoped enumerations are a C++11 extension
+enum struct Severity {
+     ^
+/home/leifu/agent_based_epidemic_simulation_using_fpga/main/device/main.cl:209:66: error: extraneous ')' before ';'
+                    PLACE_CLOSED(i2, Hosts[i3].PlaceLinks[i2], 5));
+                                                                 ^
+1 warning and 1 error generated.
