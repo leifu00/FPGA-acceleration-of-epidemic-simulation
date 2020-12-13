@@ -1,4 +1,4 @@
-#define LEN 10000
+#define LEN 100000
 
 kernel void infect_sweep(global const bool *restrict InfStats,
 						global const bool *restrict Travelling,
