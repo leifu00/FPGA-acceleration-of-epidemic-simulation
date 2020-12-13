@@ -172,7 +172,6 @@ __kernel void infect_sweep( __global const struct Param *restrict P,
         double hbeta = 0.2;
 
         struct Cell c = CellLookup[index]; // select Cell given by index b
-        struct PopVar status = StateT[index];
 
     
         for (int j = 0; j < c.I; j++) 
@@ -214,8 +213,7 @@ __kernel void infect_sweep( __global const struct Param *restrict P,
 
             for (int i3 = l; i3 < m; i3++) //// loop over all people in household (note goes from l to m - 1)
             {
-                if ((Hosts[i3].inf == InfStat_Susceptible) && (!Hosts[i3].Travelling)) //// if people in household uninfected/susceptible and not travelling
-                {
+         
                     double personSusc = P->WAIFW_Matrix[HOST_AGE_GROUP(i3)][HOST_AGE_GROUP(ci)]
                             * P->AgeSusceptibility[HOST_AGE_GROUP(i3)] * Hosts[i3].susc
                             *	(HOST_TREATED(i3, 10) ? P->TreatSuscDrop : 1.0)
@@ -231,32 +229,12 @@ __kernel void infect_sweep( __global const struct Param *restrict P,
                     double s = s3 * houseSusc;
 
 
-                    if (s > Rands[index])
-                    {
-                        if ((P->FalsePositiveRate > 0) && (Rands[index] < P->FalsePositiveRate))
-                        {
-                            status.inf_queue_infector[j] = -1;
-                            status.inf_queue_infectee[j] = 0;
-                            status.inf_queue_infect_type[j] = 1;
-                                            
-                        } else 
-                        {
-                            // Hosts[i3].infector = ci; //// assign person ci as infector of person i3
-                            
-                            //infect_type: first 4 bits store type of infection
-                            //				1= household
-                            //				2..NUM_PLACE_TYPES+1 = within-class/work-group place based transmission
-                            //				NUM_PLACE_TYPES+2..2*NUM_PLACE_TYPES+1 = between-class/work-group place based transmission
-                            //				2*NUM_PLACE_TYPES+2 = "spatial" transmission (spatially local random mixing)
-                            // bits >4 store the generation of infection
+      
 
-                            short int infect_type = 1 + INFECT_TYPE_MASK * (1 + si.infect_type / INFECT_TYPE_MASK);
-                            status.inf_queue_infector[j] = ci;
-                            status.inf_queue_infectee[j] = i3;
-                            status.inf_queue_infect_type[j] = infect_type;
-                        }
-                    }
-                }
+                    short int infect_type = 1 + INFECT_TYPE_MASK * (1 + si.infect_type / INFECT_TYPE_MASK);
+                    StateT[index].inf_queue_infector[j] = ci;
+                    StateT[index].inf_queue_infectee[j] = i3;
+                    StateT[index].inf_queue_infect_type[j] = infect_type;
           
             }
         }            
