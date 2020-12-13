@@ -153,95 +153,51 @@ struct PopVar
 
 
 
-__kernel void infect_sweep( __global const struct Param *restrict P,
-                            __global const struct Cell *restrict CellLookup,
-                            __global struct Person *restrict Hosts,
-                            __global const struct Household *restrict Households,
-                            __global const struct PersonQuarantine *restrict HostsQuarantine,
-                            __global const struct Place *restrict Places,                            
-                            __global const struct Microcell *restrict Mcells,
-                            __global const double *restrict Rands,                            
-                            __global struct PopVar *restrict StateT)
+__kernel void infect_sweep( __global const bool *restrict InfStats,
+							__global const bool *restrict Travelling,
+                            __global const float *restrict HouseInf,
+                            __global const float *restrict HouseSusc,
+                            __global const float *restrict Rands,
+							__global const int *restrict Start,							
+							__global const int *restrict End,
+							__global const bool *restrict Absent,
+							__global const int *restrict Infectors,							
+							__global uint *restrict Result_Infectors)							
 {
-    #pragma unroll 5
-    for (int index = 0; index < 1000; index++) 
-    {
-        // Testing data
-        int ts = 10;
-        double s5 = 0;
-        double hbeta = 0.2;
+ 
+    int index = get_global_id(0);
 
-        struct Cell c = CellLookup[index]; // select Cell given by index b
+	#pragma unroll 5
+	for (int h = 0; h < 10; h++)
+	{
+		int j = index * 10 + h;
 
-    
-        for (int j = 0; j < c.I; j++) 
-        {
-            int ci = c.infected[j];
-            struct Person si = Hosts[ci];
+		double s3 = HouseInf[j];
 
-            int l = Households[si.hh].FirstPerson;
-            int m = l + Households[si.hh].nh;
-
-
-            double personInf = (HOST_TREATED(ci, ts) ? P->TreatInfDrop : 1.0)
-            *	(HOST_VACCED(ci, ts) ? P->VaccInfDrop : 1.0)
-            *	fabs(Hosts[ci].infectiousness)
-            *	P->infectiousness[0 - Hosts[ci].latent_time - 1];
-
-            double houseInf = ((HOST_ISOLATED(ci, ts) && (Hosts[j].digitalContactTraced != 1)) ? P->CaseIsolationHouseEffectiveness : 1.0)
-            *	((Hosts[j].digitalContactTraced==1) ? P->DCTCaseIsolationHouseEffectiveness : 1.0)
-            *	((HOST_QUARANTINED(ci, ts) && (Hosts[j].digitalContactTraced != 1) && (!(HOST_ISOLATED(ci, ts))))? P->HQuarantineHouseEffect : 1.0)
-            *	P->HouseholdDenomLookup[Households[Hosts[j].hh].nhr - 1] * personInf;
-
-            double s3 = hbeta * houseInf;
-
-            int f = 0;
-
-            for (int i3 = l; (i3 < m) && (!f); i3++)
-            {
-                for (int i2 = 0; (i2 < P->PlaceTypeNum) && (!f); i2++)
-                {
-                    if (Hosts[i3].PlaceLinks[i2] >= 0)
-                    {
-                        f = PLACE_CLOSED(i2, Hosts[i3].PlaceLinks[i2], 5);
-                    }
-                }
-            }
+		for (int i = Start[j]; i < End[j]; i++)
+		{
+			if (Absent[i])
+			{
+				s3 *= 2;
+				break;
+			}
+		}
 
 
-            if (f) { s3 *= P->PlaceCloseHouseholdRelContact; }/* NumPCD++;}*/ //// if people in your household are absent from places, person si/ci is more infectious to them, as they spend more time at home.
-
-            for (int i3 = l; i3 < m; i3++) //// loop over all people in household (note goes from l to m - 1)
-            {
-         
-                    double personSusc = P->WAIFW_Matrix[HOST_AGE_GROUP(i3)][HOST_AGE_GROUP(ci)]
-                            * P->AgeSusceptibility[HOST_AGE_GROUP(i3)] * Hosts[i3].susc
-                            *	(HOST_TREATED(i3, 10) ? P->TreatSuscDrop : 1.0)
-                            *	(HOST_VACCED(i3, 10) ? (HOST_VACCED_SWITCH(i3) ? P->VaccSuscDrop2 : P->VaccSuscDrop) : 1.0);
-                    
-                    double houseSusc = personSusc
-                            * ((Mcells[Hosts[i3].mcell].socdist == 2) 
-                                ? ((Hosts[i3].esocdist_comply) 
-                                ? P->EnhancedSocDistHouseholdEffectCurrent 
-                                : P->SocDistHouseholdEffectCurrent) : 1.0)
-                            * (Hosts[i3].digitalContactTraced == 1 ? P->DCTCaseIsolationHouseEffectiveness : 1.0);
-                    
-                    double s = s3 * houseSusc;
+		for (int i = Start[j]; i < End[j]; i++)
+		{
+			if ((InfStats[j]) && (!Travelling[j])) 
+			{
+				s3 *= HouseSusc[i];
+				if (s3 > Rands[j])
+				{
+					Result_Infectors[j] = Infectors[j];
+				}    
+			}
+		}
+	}
 
 
-      
-
-                    short int infect_type = 1 + INFECT_TYPE_MASK * (1 + si.infect_type / INFECT_TYPE_MASK);
-                    StateT[index].inf_queue_infector[j] = ci;
-                    StateT[index].inf_queue_infectee[j] = i3;
-                    StateT[index].inf_queue_infect_type[j] = infect_type;
-          
-            }
-        }            
-
-
-    }
-    
 
 
     
