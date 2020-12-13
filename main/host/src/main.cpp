@@ -337,7 +337,7 @@ void run() {
     checkError(status, "Failed to set argument %d", argi - 1);
  
 
-    const size_t global_work_size = 10;
+    const size_t global_work_size = 1;
     printf("debug: global_work_size: %d\n", global_work_size);
     printf("Launching for device %d (%zd elements)\n", i, global_work_size);
 
