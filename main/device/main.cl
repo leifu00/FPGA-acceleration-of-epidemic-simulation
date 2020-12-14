@@ -1,4 +1,4 @@
-#define LEN 100000
+#define LEN 1000000
 
 kernel void infect_sweep(global const bool *restrict InfStats,
 						global const bool *restrict Travelling,
@@ -11,15 +11,10 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 						global const int *restrict Infectors,							
 						global int *restrict Result_Infectors)							
 {
-	local float HouseInf_cache[LEN];
-	for( unsigned k = 0; k < LEN; k++ )
-	{
-		HouseInf_cache[k] = HouseInf[k];
-	}
 	#pragma unroll 5
 	for (int j = 0; j < LEN; j++)
 	{
-		float s3 = HouseInf_cache[j];
+		float s3 = HouseInf[j];
 
 		for (int i = Start[j]; i < End[j]; i++)
 		{
