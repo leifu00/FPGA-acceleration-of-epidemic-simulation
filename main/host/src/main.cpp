@@ -61,7 +61,7 @@ scoped_array<cl_mem> Results_buf;
 
 
 // Problem data.
-unsigned N = 10000; // problem size
+unsigned N = 100000; // problem size
 
 
 scoped_array<unsigned> n_per_device; // num_devices elements
