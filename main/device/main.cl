@@ -16,12 +16,20 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 						global const float *restrict WAIFW_Matrix,
 						global const float *restrict AgeSusceptibility,
 						global const int* restrict Age,
-						global float *restrict Susceptibility)							
+						global const float *restrict Susceptibility)							
 {
 	local bool Absent_cache[MAX_HOUSEHOLD_SIZE];
 	local int Age_cache[MAX_HOUSEHOLD_SIZE];
 	local float Susceptibility_cache[MAX_HOUSEHOLD_SIZE];
 	local int Results_cache[MAX_HOUSEHOLD_SIZE];
+	local float WAIFW_Matrix_cache[AGE_GROUP_WIDTH * AGE_GROUP_WIDTH];
+	local float AgeSusceptibility_cache[AGE_GROUP_WIDTH * AGE_GROUP_WIDTH];
+
+	for (int i = 0; i < AGE_GROUP_WIDTH * AGE_GROUP_WIDTH; i++)
+	{
+		WAIFW_Matrix_cache[i] = WAIFW_Matrix[i];
+		AgeSusceptibility_cache[i] = AgeSusceptibility[i];
+	}
 
 	#pragma unroll 2
 	for (int i = 0; i < NUMBER_OF_HOUSEHOLDS; i++)
@@ -31,6 +39,7 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 		int last_person = End[i];
 		int infector = Infectors[i];
 
+		#pragma unroll MAX_HOUSEHOLD_SIZE
 		for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
 		{
 			int current_person = j + first_person;
@@ -42,18 +51,19 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 		#pragma unroll MAX_HOUSEHOLD_SIZE
 		for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
 		{
-			FOI *=  Absent_cache[j] ? PlaceCloseHouseholdRelContact : 1;
+			FOI *=  (1 + Absent_cache[j]) * PlaceCloseHouseholdRelContact;
 		}
 
 		#pragma unroll MAX_HOUSEHOLD_SIZE
 		for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
 		{
 			int host_age_group = Age_cache[j] / AGE_GROUP_WIDTH;
-			float infectee_susceptibility = AgeSusceptibility[host_age_group] * Susceptibility_cache[j];
-			FOI *= WAIFW_Matrix[host_age_group * AGE_GROUP_WIDTH + infector] * infectee_susceptibility;
+			float infectee_susceptibility = AgeSusceptibility_cache[host_age_group] * Susceptibility_cache[j];
+			FOI *= WAIFW_Matrix_cache[host_age_group * AGE_GROUP_WIDTH + infector] * infectee_susceptibility;
 			Results_cache[j] = FOI;
 		}
 
+		#pragma unroll MAX_HOUSEHOLD_SIZE
 		for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
 		{
 			int current_person = j + first_person;
