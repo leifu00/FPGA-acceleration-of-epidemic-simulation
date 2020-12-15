@@ -305,10 +305,10 @@ void init_problem_with_random_data() {
       Travelling[i][j] = false;
       HouseSusc[i][j] = 0.1;
       HouseInf[i][j] = 0.1;
-      Rands[i][j] = 0.01;
+      Rands[i][j] = 0.0f;
       Start[i][j] = 1;
-      End[i][j] = 100;
-      Absent[i][j] = false;
+      End[i][j] = 10;
+      Absent[i][j] = true;
       Infectors[i][j] = 10;
       Results[i][j] = 0;
       WAIFW_Matrix[i][j] = 1.2;
@@ -323,6 +323,7 @@ void init_problem_with_random_data() {
 }
 
 void run() {
+  const double start_time = getCurrentTimestamp();
   cl_int status;
 
 
@@ -416,7 +417,6 @@ void run() {
   }
 
 
-  const double start_time = getCurrentTimestamp();
 
   clWaitForEvents(num_devices, finish_event);
 
@@ -427,7 +427,7 @@ void run() {
 
   for (int i = 0; i < num_devices; i++)
   {
-    for (int j = 0; j < 1000000; j++)
+    for (int j = 900000; j < 900010; j++)
     {
       printf("Results[%d][%d] = %d\n", i, j, Results[i][j]);
     }
