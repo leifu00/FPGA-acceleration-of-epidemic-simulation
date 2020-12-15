@@ -31,7 +31,7 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 		AgeSusceptibility_cache[i] = AgeSusceptibility[i];
 	}
 
-	#pragma unroll 10
+	#pragma unroll 5
 	for (int i = 0; i < NUMBER_OF_HOUSEHOLDS; i++)
 	{
 		float FOI = HouseInf[i];
