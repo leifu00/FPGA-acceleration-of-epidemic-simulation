@@ -231,7 +231,7 @@ bool init_opencl() {
         n_per_device[i] * sizeof(int), NULL, &status);
     checkError(status, "Failed to create buffer for Infectors.");
     Results_buf[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, 
-        n_per_device[i] * sizeof(int), NULL, &status);
+        n_per_device[i] * sizeof(float), NULL, &status);
     checkError(status, "Failed to create buffer for Results.");
     Absent_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
         n_per_device[i] * sizeof(bool), NULL, &status);
@@ -239,9 +239,6 @@ bool init_opencl() {
     Infectors_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
         n_per_device[i] * sizeof(int), NULL, &status);
     checkError(status, "Failed to create buffer for Infectors.");
-    Results_buf[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, 
-        n_per_device[i] * sizeof(int), NULL, &status);
-    checkError(status, "Failed to create buffer for Results.");
     WAIFW_Matrix_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
         n_per_device[i] * sizeof(float), NULL, &status);
     checkError(status, "Failed to create buffer for WAIFW_Matrix.");
@@ -408,7 +405,7 @@ void run() {
     checkError(status, "Failed to launch kernel");
 
     status = clEnqueueReadBuffer(queue[i], Results_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(int), Results[i], 1, &kernel_event[i], &finish_event[i]);
+        0, n_per_device[i] * sizeof(float), Results[i], 1, &kernel_event[i], &finish_event[i]);
 
     for (unsigned k = 0; k < event_count; k++)
     {
@@ -429,7 +426,7 @@ void run() {
   {
     for (int j = 900000; j < 900010; j++)
     {
-      printf("Results[%d][%d] = %d\n", i, j, Results[i][j]);
+      printf("Results[%d][%d] = %f\n", i, j, Results[i][j]);
     }
   }
 
