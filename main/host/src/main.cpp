@@ -39,7 +39,7 @@ scoped_array<scoped_aligned_ptr<int> > Start;
 scoped_array<scoped_aligned_ptr<int> > End; 
 scoped_array<scoped_aligned_ptr<bool> > Absent; 
 scoped_array<scoped_aligned_ptr<int> > Infectors; 
-scoped_array<scoped_aligned_ptr<int> > Results; 
+scoped_array<scoped_aligned_ptr<float> > Results; 
 scoped_array<scoped_aligned_ptr<float> > WAIFW_Matrix; 
 scoped_array<scoped_aligned_ptr<float> > AgeSusceptibility; 
 scoped_array<scoped_aligned_ptr<int> > Age; 
@@ -424,7 +424,7 @@ void run() {
 
   for (int i = 0; i < num_devices; i++)
   {
-    for (int j = 900000; j < 900010; j++)
+    for (int j = 0; j < 10; j++)
     {
       printf("Results[%d][%d] = %f\n", i, j, Results[i][j]);
     }
