@@ -40,6 +40,12 @@ scoped_array<scoped_aligned_ptr<int> > End;
 scoped_array<scoped_aligned_ptr<bool> > Absent; 
 scoped_array<scoped_aligned_ptr<int> > Infectors; 
 scoped_array<scoped_aligned_ptr<int> > Results; 
+scoped_array<scoped_aligned_ptr<float> > WAIFW_Matrix; 
+scoped_array<scoped_aligned_ptr<float> > AgeSusceptibility; 
+scoped_array<scoped_aligned_ptr<int> > Age; 
+scoped_array<scoped_aligned_ptr<float> > Susceptibility; 
+
+
 
 
 
@@ -53,6 +59,11 @@ scoped_array<cl_mem> End_buf;
 scoped_array<cl_mem> Absent_buf;
 scoped_array<cl_mem> Infectors_buf;
 scoped_array<cl_mem> Results_buf;
+scoped_array<cl_mem> WAIFW_Matrix_buf;
+scoped_array<cl_mem> AgeSusceptibility_buf;
+scoped_array<cl_mem> Age_buf;
+scoped_array<cl_mem> Susceptibility_buf;
+
 
 
 
@@ -165,6 +176,11 @@ bool init_opencl() {
   Absent_buf.reset(num_devices);
   Infectors_buf.reset(num_devices);
   Results_buf.reset(num_devices);
+  WAIFW_Matrix_buf.reset(num_devices);
+  AgeSusceptibility_buf.reset(num_devices);
+  Age_buf.reset(num_devices);
+  Susceptibility_buf.reset(num_devices)
+;
 
 
   for(unsigned i = 0; i < num_devices; ++i) {
@@ -217,7 +233,27 @@ bool init_opencl() {
     Results_buf[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, 
         n_per_device[i] * sizeof(int), NULL, &status);
     checkError(status, "Failed to create buffer for Results.");
-
+    Absent_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(bool), NULL, &status);
+    checkError(status, "Failed to create buffer for Absent.");
+    Infectors_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(int), NULL, &status);
+    checkError(status, "Failed to create buffer for Infectors.");
+    Results_buf[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, 
+        n_per_device[i] * sizeof(int), NULL, &status);
+    checkError(status, "Failed to create buffer for Results.");
+    WAIFW_Matrix_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(float), NULL, &status);
+    checkError(status, "Failed to create buffer for WAIFW_Matrix.");
+    AgeSusceptibility_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(float), NULL, &status);
+    checkError(status, "Failed to create buffer for AgeSusceptibility.");
+    Age_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(int), NULL, &status);
+    checkError(status, "Failed to create buffer for Age.");
+    Susceptibility_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(float), NULL, &status);
+    checkError(status, "Failed to create buffer for Susceptibility.");
   }
 
   return true;
@@ -239,6 +275,10 @@ void init_problem_with_random_data() {
   Absent.reset(num_devices);
   Infectors.reset(num_devices);
   Results.reset(num_devices);
+  WAIFW_Matrix.reset(num_devices);
+  AgeSusceptibility.reset(num_devices);
+  Age.reset(num_devices);
+  Susceptibility.reset(num_devices);
   
 
 
@@ -254,6 +294,10 @@ void init_problem_with_random_data() {
     End[i].reset(n_per_device[i]);    
     Infectors[i].reset(n_per_device[i]);
     Results[i].reset(n_per_device[i]);
+    WAIFW_Matrix[i].reset(n_per_device[i]);
+    AgeSusceptibility[i].reset(n_per_device[i]);
+    Age[i].reset(n_per_device[i]);
+    Susceptibility[i].reset(n_per_device[i]);
 
     for (unsigned j = 0; j < n_per_device[i]; j++)
     {
@@ -267,6 +311,10 @@ void init_problem_with_random_data() {
       Absent[i][j] = false;
       Infectors[i][j] = 10;
       Results[i][j] = 0;
+      WAIFW_Matrix[i][j] = 1.2;
+      AgeSusceptibility[i][j] = 0.8;
+      Age[i][j] = 10;
+      Susceptibility[i][j] = 0.4;
     }
   }
 
@@ -284,7 +332,7 @@ void run() {
 
   for(unsigned i = 0; i < num_devices; ++i) {
 
-    unsigned event_count = 10;
+    unsigned event_count = 14;
 
     cl_event write_event[event_count];
     status = clEnqueueWriteBuffer(queue[i], InfStats_buf[i], CL_FALSE,
@@ -307,6 +355,14 @@ void run() {
         0, n_per_device[i] * sizeof(int), Infectors[i], 0, NULL, &write_event[8]);
     status = clEnqueueWriteBuffer(queue[i], Results_buf[i], CL_FALSE,
         0, n_per_device[i] * sizeof(int), Results[i], 0, NULL, &write_event[9]);
+    status = clEnqueueWriteBuffer(queue[i], WAIFW_Matrix_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(float), WAIFW_Matrix[i], 0, NULL, &write_event[10]);
+    status = clEnqueueWriteBuffer(queue[i], AgeSusceptibility_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(float), AgeSusceptibility[i], 0, NULL, &write_event[11]);    
+    status = clEnqueueWriteBuffer(queue[i], Age_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(int), Age[i], 0, NULL, &write_event[12]);
+    status = clEnqueueWriteBuffer(queue[i], Susceptibility_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(float), Susceptibility[i], 0, NULL, &write_event[13]);
         
     checkError(status, "Failed to transfer input CellLookup");
 
@@ -320,8 +376,6 @@ void run() {
     checkError(status, "Failed to set argument %d", argi - 1);
     status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &HouseInf_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &HouseSusc_buf[i]);
-    checkError(status, "Failed to set argument %d", argi - 1);
     status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Rands_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
     status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Start_buf[i]);
@@ -334,7 +388,14 @@ void run() {
     checkError(status, "Failed to set argument %d", argi - 1);
     status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Results_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
- 
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &WAIFW_Matrix_buf[i]);
+    checkError(status, "Failed to set argument %d", argi - 1);    
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &AgeSusceptibility_buf[i]);
+    checkError(status, "Failed to set argument %d", argi - 1);
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Age_buf[i]);
+    checkError(status, "Failed to set argument %d", argi - 1);
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Susceptibility_buf[i]);
+    checkError(status, "Failed to set argument %d", argi - 1);
 
     const size_t global_work_size = 1;
     printf("debug: global_work_size: %d\n", global_work_size);
@@ -366,7 +427,7 @@ void run() {
 
   for (int i = 0; i < num_devices; i++)
   {
-    for (int j = 0; j < 10; j++)
+    for (int j = 0; j < 1000000; j++)
     {
       printf("Results[%d][%d] = %d\n", i, j, Results[i][j]);
     }
