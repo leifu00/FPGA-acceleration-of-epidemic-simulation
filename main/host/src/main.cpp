@@ -277,7 +277,6 @@ void init_problem_with_random_data() {
 void run() {
   cl_int status;
 
-  const double start_time = getCurrentTimestamp();
 
   // Launch the problem for each device.
   scoped_array<cl_event> kernel_event(num_devices);
@@ -355,6 +354,8 @@ void run() {
     }
   }
 
+
+  const double start_time = getCurrentTimestamp();
 
   clWaitForEvents(num_devices, finish_event);
 
