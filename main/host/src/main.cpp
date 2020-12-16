@@ -352,7 +352,7 @@ void run() {
     status = clEnqueueWriteBuffer(queue[i], Infectors_buf[i], CL_FALSE,
         0, n_per_device[i] * sizeof(int), Infectors[i], 0, NULL, &write_event[8]);
     status = clEnqueueWriteBuffer(queue[i], Results_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(int), Results[i], 0, NULL, &write_event[9]);
+        0, n_per_device[i] * sizeof(float), Results[i], 0, NULL, &write_event[9]);
     status = clEnqueueWriteBuffer(queue[i], WAIFW_Matrix_buf[i], CL_FALSE,
         0, n_per_device[i] * sizeof(float), WAIFW_Matrix[i], 0, NULL, &write_event[10]);
     status = clEnqueueWriteBuffer(queue[i], AgeSusceptibility_buf[i], CL_FALSE,
@@ -424,7 +424,7 @@ void run() {
 
   for (int i = 0; i < num_devices; i++)
   {
-    for (int j = 0; j < 10; j++)
+    for (int j = 100000; j < 100010; j++)
     {
       printf("Results[%d][%d] = %f\n", i, j, Results[i][j]);
     }
