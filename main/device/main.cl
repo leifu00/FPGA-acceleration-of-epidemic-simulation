@@ -17,7 +17,7 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 						global int *restrict Age,
 						global float *restrict Susceptibility)							
 {
-	local int Age_cache[10];
+	local int Age_cache[20];
 	for (int j = 0; j < LEN; j++)
 	{
 		float s3 = HouseInf[j];
