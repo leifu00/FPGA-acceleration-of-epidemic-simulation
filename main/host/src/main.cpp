@@ -81,7 +81,8 @@ scoped_array<unsigned> n_per_device; // num_devices elements
 bool use_emulator = false;
 
 // Function prototypes
-float rand_float();
+float random_float(float min, float max);
+int random_int(int min, int max);
 bool init_opencl();
 void init_problem_with_random_data();
 void run();
@@ -256,6 +257,21 @@ bool init_opencl() {
   return true;
 }
 
+
+float random_float(float a, float b)
+{
+    float random = ((float) rand()) / (float) RAND_MAX;
+    float diff = b - a;
+    float r = random * diff;
+    return a + r;
+}
+
+int random_int(int min, int max)    
+{    
+    return rand() % (max - min) + min + 1;     
+}
+
+
 void init_problem_with_random_data() {
   if(num_devices == 0) {
     checkError(-1, "No devices");
@@ -300,18 +316,18 @@ void init_problem_with_random_data() {
     {
       InfStats[i][j] = true;
       Travelling[i][j] = false;
-      HouseSusc[i][j] = 0.1;
-      HouseInf[i][j] = 0.1;
-      Rands[i][j] = 0.0f;
-      Start[i][j] = 1;
-      End[i][j] = 10;
+      HouseSusc[i][j] = random_float(0.1, 1);
+      HouseInf[i][j] = random_float(0.1, 1);
+      Rands[i][j] = random_float(0.1, 1);
+      Start[i][j] = random_int(0, n_per_device[i] - 100);
+      End[i][j] = Start[i][j] +  10;
       Absent[i][j] = true;
-      Infectors[i][j] = 10;
+      Infectors[i][j] = random_int(0, n_per_device[i] - 100);
       Results[i][j] = 0;
-      WAIFW_Matrix[i][j] = 1.2;
-      AgeSusceptibility[i][j] = 0.8;
-      Age[i][j] = 10;
-      Susceptibility[i][j] = 0.4;
+      WAIFW_Matrix[i][j] = random_float(0.1, 1);
+      AgeSusceptibility[i][j] = random_float(0.1, 1);
+      Age[i][j] = random_int(0, 100);
+      Susceptibility[i][j] = random_float(0.1, 1);
     }
   }
 

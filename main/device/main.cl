@@ -1,4 +1,4 @@
-#define NUMBER_OF_HOUSEHOLDS 10
+#define NUMBER_OF_HOUSEHOLDS 1000000
 #define AGE_GROUP_WIDTH 17
 #define PlaceCloseHouseholdRelContact 2.0
 #define MAX_HOUSEHOLD_SIZE 15
@@ -60,7 +60,7 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 			int host_age_group = Age_cache[j] / AGE_GROUP_WIDTH;
 			float infectee_susceptibility = AgeSusceptibility[host_age_group] * Susceptibility_cache[j];
 			FOI *= WAIFW_Matrix[host_age_group * AGE_GROUP_WIDTH + infector] * infectee_susceptibility;
-			Results_cache[j] = FOI * 1000;
+			Results_cache[j] = FOI * 1000000;
 		}
 
 		#pragma unroll MAX_HOUSEHOLD_SIZE
