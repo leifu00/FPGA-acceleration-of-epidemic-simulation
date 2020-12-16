@@ -1,6 +1,7 @@
-#define LEN 1000000
+#define NUMBER_OF_HOUSEHOLDS 10
 #define AGE_GROUP_WIDTH 17
 #define PlaceCloseHouseholdRelContact 2.0
+#define MAX_HOUSEHOLD_SIZE 15
 
 
 kernel void infect_sweep(global const bool *restrict InfStats,
@@ -11,50 +12,62 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 						global const int *restrict End,
 						global const bool *restrict Absent,
 						global const int *restrict Infectors,							
-						global int *restrict Result_Infectors,
-						global float *restrict WAIFW_Matrix,
-						global float *restrict AgeSusceptibility,
-						global int *restrict Age,
-						global float *restrict Susceptibility)							
+						global float *restrict Results,
+						global const float *restrict WAIFW_Matrix,
+						global const float *restrict AgeSusceptibility,
+						global const int* restrict Age,
+						global const float *restrict Susceptibility)							
 {
-	local int Age_cache[20];
-	for (int j = 0; j < LEN; j++)
+	local bool Absent_cache[MAX_HOUSEHOLD_SIZE];
+	local int Age_cache[MAX_HOUSEHOLD_SIZE];
+	local float Susceptibility_cache[MAX_HOUSEHOLD_SIZE];
+	local int Results_cache[MAX_HOUSEHOLD_SIZE];
+
+
+	for (int i = 0; i < NUMBER_OF_HOUSEHOLDS; i++)
 	{
-		float s3 = HouseInf[j];
+		float FOI = HouseInf[i];
+		int first_person = Start[i];
+		int last_person = End[i];
+		int infector = Infectors[i];
 
-		int flag = 0;
-		int first = 10000000;
 
-		#pragma unroll 20
-		for (int i = 0; i < 20; i++)
+		#pragma unroll MAX_HOUSEHOLD_SIZE
+		for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
 		{
-			int current = i + Start[j];
-			flag += Absent[current];
-			first = current;
+			int current_person = j + first_person;
+			Absent_cache[j] = Absent[current_person];
+			Age_cache[j] = Age[current_person];
+			Susceptibility_cache[j] = Susceptibility[current_person];
 		}
 
-		if (flag && first < End[j])
+		int number_of_absent = 0;
+		int first_absent = 0;
+
+
+		#pragma unroll MAX_HOUSEHOLD_SIZE
+		for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
 		{
-			s3 *= PlaceCloseHouseholdRelContact;
+			number_of_absent += Absent_cache[j];
+			first_absent = Absent_cache[j] * (j + first_person);
+		}
+			
+		if (number_of_absent && first_absent < last_person) FOI *= PlaceCloseHouseholdRelContact;
+
+		#pragma unroll MAX_HOUSEHOLD_SIZE
+		for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
+		{
+			int host_age_group = Age_cache[j] / AGE_GROUP_WIDTH;
+			float infectee_susceptibility = AgeSusceptibility[host_age_group] * Susceptibility_cache[j];
+			FOI *= WAIFW_Matrix[host_age_group * AGE_GROUP_WIDTH + infector] * infectee_susceptibility;
+			Results_cache[j] = FOI * 1000;
 		}
 
-		#pragma unroll 20
-		for (int i = 0; i < 20; i++)
+		#pragma unroll MAX_HOUSEHOLD_SIZE
+		for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
 		{
-			Age_cache[i] = Age[Start[j] + i];
+			int current_person = j + first_person;
+			Results[current_person] = Results_cache[j];
 		}
-
-		#pragma unroll 20
-		for (int i = 0; i < 20; i++)
-		{
-			int current = i + Start[i];
-			int host_age_group = Age_cache[i] / AGE_GROUP_WIDTH;
-			int infector = Infectors[j];
-			s3 *= WAIFW_Matrix[host_age_group * AGE_GROUP_WIDTH + infector] * AgeSusceptibility[host_age_group] * Susceptibility[j];
-			Result_Infectors[j] = infector * (s3 > Rands[j] ? 1 : 0) * (InfStats[j]) * (!Travelling[j]);
-		}
-
-	}
-
-    
+	}    
 }
