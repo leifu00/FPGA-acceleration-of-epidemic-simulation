@@ -1,36 +1,43 @@
 #define NUMBER_OF_HOUSEHOLDS 1000000
 #define AGE_GROUP_WIDTH 17
-#define PlaceCloseHouseholdRelContact 2.0
 #define MAX_HOUSEHOLD_SIZE 15
-#define CHUNK_SIZE 10000
+#define CHUNK_SIZE1 1000
+#define CHUNK_SIZE2 15000
 #define AgeSusceptibility_SIZE 100
 #define WAIFW_Matrix_SIZE 100
 #define UNROLL_SIZE 2
+
+#define PlaceCloseHouseholdRelContact 2.0
+#define TreatSuscDrop 0.1
+#define VaccSuscDrop 0.2
 
 
 kernel void infect_sweep(global const bool *restrict InfStats,
 						global const bool *restrict Travelling,
                         global const float *restrict HouseInf,
-                        global const float *restrict Rands,
-						global const int *restrict Start,							
-						global const int *restrict End,
 						global const bool *restrict Absent,
 						global const int *restrict Infectors,							
-						global float *restrict Results,
 						global const float *restrict WAIFW_Matrix,
 						global const float *restrict AgeSusceptibility,
 						global const int* restrict Age,
-						global const float *restrict Susceptibility)							
+						global const float *restrict Susceptibility,
+						global const bool *restrict Treated,
+						global const bool *restrict Vaccinated,
+						global float *restrict Results)							
 {
-	local bool Absent_cache[MAX_HOUSEHOLD_SIZE];
-	local int Age_cache[MAX_HOUSEHOLD_SIZE];
-	local float Susceptibility_cache[MAX_HOUSEHOLD_SIZE];
-	local int Results_cache[MAX_HOUSEHOLD_SIZE];
+	local int Infectors_cache[CHUNK_SIZE1];
+	local float HouseInf_cache[CHUNK_SIZE1];
+	local int Age_cache1[CHUNK_SIZE1];
+	local int InfStats_cache[CHUNK_SIZE1];
+	local int Travelling_cache[CHUNK_SIZE1];
 
-	local float HouseInf_cache[CHUNK_SIZE];
-	local int Start_cache[CHUNK_SIZE];
-	local int End_cache[CHUNK_SIZE];
-	local int Infectors_cache[CHUNK_SIZE];
+	local bool Absent_cache[CHUNK_SIZE2];
+	local int Age_cache2[CHUNK_SIZE2];
+	local float Susceptibility_cache[CHUNK_SIZE2];
+	local bool Treated_cache[CHUNK_SIZE2];
+	local bool Vaccinated_cache[CHUNK_SIZE2];
+	local int Results_cache[CHUNK_SIZE2];
+
 
 	local float AgeSusceptibility_cache[AgeSusceptibility_SIZE];
 	local float WAIFW_Matrix_cache[WAIFW_Matrix_SIZE];
@@ -47,85 +54,69 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 		WAIFW_Matrix_cache[i] = WAIFW_Matrix[i];
 	}
 
-	int offset = 0;
+	int offset1 = 0, offset2 = 0;
 
-	#pragma unroll 3
-	for (int c = 0; c < NUMBER_OF_HOUSEHOLDS / CHUNK_SIZE; c++)
+	for (int c = 0; c < NUMBER_OF_HOUSEHOLDS / CHUNK_SIZE1; c++)
 	{
 		#pragma unroll 10
-		for (int i = 0; i < CHUNK_SIZE; i++)
+		for (int i = 0; i < CHUNK_SIZE1; i++)
 		{
-			HouseInf_cache[i] = HouseInf[i + offset];
+			int current_person = i + offset1;
+			HouseInf_cache[i] = HouseInf[current_person];
+			Infectors_cache[i] = Infectors[current_person];
+			Age_cache1[i] = Age[current_person];
+			Travelling_cache[i] = Travelling[current_person];
+			Infectors_cache[i] = Infectors[current_person];
 		}
 
 		#pragma unroll 10
-		for (int i = 0; i < CHUNK_SIZE; i++)
+		for (int i = 0; i < CHUNK_SIZE2; i++)
 		{
-			Start_cache[i] = Start[i + offset];
+			int current_person = i + offset2;
+			Absent_cache[i] = Absent[current_person];
+			Age_cache2[i] = Age[current_person];
+			Susceptibility_cache[i] = Susceptibility[current_person];
+			Treated_cache[i] = Treated[current_person];
+			Vaccinated_cache[i] = Vaccinated[current_person];
 		}
 
-		#pragma unroll 10
-		for (int i = 0; i < CHUNK_SIZE; i++)
-		{
-			End_cache[i] = End[i + offset];
-		}
-
-		#pragma unroll 10
-		for (int i = 0; i < CHUNK_SIZE; i++)
-		{
-			Infectors_cache[i] = Infectors[i + offset];
-		}
-
-		offset += CHUNK_SIZE;
-
-		for (int i = 0; i < CHUNK_SIZE; i++)
+		for (int i = 0; i < CHUNK_SIZE1; i++)
 		{
 			float FOI = HouseInf_cache[i];
-			int first_person = Start_cache[i];
-			int last_person = End_cache[i];
 			int infector = Infectors_cache[i];
-
-
-
-			#pragma unroll MAX_HOUSEHOLD_SIZE
-			for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
-			{
-				int current_person = j + first_person;
-				Absent_cache[j] = Absent[current_person];
-				Age_cache[j] = Age[current_person];
-				Susceptibility_cache[j] = Susceptibility[current_person];
-			}
+			bool travelling = Travelling_cache[i];
+			bool infStats = InfStats[i];
 
 			int number_of_absent = 0;
 			int first_absent = 0;
 
-
 			#pragma unroll MAX_HOUSEHOLD_SIZE
-			for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
+			for (int j = i * MAX_HOUSEHOLD_SIZE; j < (i + 1) * MAX_HOUSEHOLD_SIZE && j < CHUNK_SIZE2; j++)
 			{
-				number_of_absent += Absent_cache[j];
-				first_absent = Absent_cache[j] * (j + first_person);
+				FOI *= (1 + PlaceCloseHouseholdRelContact * Absent_cache[j]);
 			}
 				
-			if (number_of_absent && first_absent < last_person) FOI *= PlaceCloseHouseholdRelContact;
-
 			#pragma unroll MAX_HOUSEHOLD_SIZE
-			for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
+			for (int j = i * MAX_HOUSEHOLD_SIZE; j < (i + 1) * MAX_HOUSEHOLD_SIZE; j++)
 			{
-				int host_age_group = Age_cache[j] / AGE_GROUP_WIDTH;
-				int infector_age_group = Age[infector] / AGE_GROUP_WIDTH;
+				int host_age_group = Age_cache2[j] / AGE_GROUP_WIDTH;
+				int infector_age_group = Age_cache1[i] / AGE_GROUP_WIDTH;
 				float infectee_susceptibility = AgeSusceptibility_cache[host_age_group] * Susceptibility_cache[j];
 				FOI *= WAIFW_Matrix_cache[host_age_group * AGE_GROUP_WIDTH + infector_age_group] * infectee_susceptibility;
-				Results_cache[j] = FOI * 100000000;
-			}
-
-			#pragma unroll MAX_HOUSEHOLD_SIZE
-			for (int j = 0; j < MAX_HOUSEHOLD_SIZE; j++)
-			{
-				int current_person = j + first_person;
-				Results[current_person] = Results_cache[j];
+				FOI *= (1.0 - Treated_cache[j] * TreatSuscDrop) * (1.0 - Vaccinated_cache[j] * VaccSuscDrop);
+				Results_cache[j] = FOI * (!travelling) * infStats;
 			}
 		}    
+
+		#pragma unroll 10
+		for (int i = 0; i < CHUNK_SIZE2; i++)
+		{
+			int current_person = i + offset2;
+			Results[current_person] = Results_cache[i];
+		}
+
+		offset1 += CHUNK_SIZE1;
+		offset2 += CHUNK_SIZE2;
 	}
 }
 
