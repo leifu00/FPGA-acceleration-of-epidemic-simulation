@@ -55,11 +55,25 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 		#pragma unroll 10
 		for (int i = 0; i < CHUNK_SIZE; i++)
 		{
-			int current_index = i + offset;
-			HouseInf_cache[i] = HouseInf[current_index];
-			Start_cache[i] = Start[current_index];
-			End_cache[i] = End[current_index];
-			Infectors_cache[i] = Infectors[current_index];
+			HouseInf_cache[i] = HouseInf[i + offset];
+		}
+
+		#pragma unroll 10
+		for (int i = 0; i < CHUNK_SIZE; i++)
+		{
+			Start_cache[i] = Start[i + offset];
+		}
+
+		#pragma unroll 10
+		for (int i = 0; i < CHUNK_SIZE; i++)
+		{
+			End_cache[i] = End[i + offset];
+		}
+
+		#pragma unroll 10
+		for (int i = 0; i < CHUNK_SIZE; i++)
+		{
+			Infectors_cache[i] = Infectors[i + offset];
 		}
 
 		offset += CHUNK_SIZE;
