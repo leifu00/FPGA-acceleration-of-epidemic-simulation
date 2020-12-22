@@ -426,7 +426,7 @@ void run() {
 
   for (int i = 0; i < num_devices; i++)
   {
-    for (int j = 100000; j < 100010; j++)
+    for (int j = 5000000; j < 5000010; j++)
     {
       printf("Results[%d][%d] = %f\n", i, j, Results[i][j]);
     }
