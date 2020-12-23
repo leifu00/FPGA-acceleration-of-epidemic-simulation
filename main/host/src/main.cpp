@@ -12,7 +12,7 @@ using namespace aocl_utils;
 #include "param.h"
 #include "rand.h"
 
-#define MAX_HOUSEHOLD_SIZE 15
+#define MAX_HOUSEHOLD_SIZE 10
 
 
 // OpenCL runtime configuration
@@ -45,8 +45,6 @@ scoped_array<scoped_aligned_ptr<bool> > Vaccinated;
 scoped_array<scoped_aligned_ptr<float> > Results; 
 
 
-
-
 scoped_array<cl_mem> InfStats_buf;
 scoped_array<cl_mem> Travelling_buf;
 scoped_array<cl_mem> HouseInf_buf;
@@ -70,7 +68,7 @@ scoped_array<cl_mem> Results_buf;
 
 
 // Problem data.
-unsigned N = 10000000; // problem size
+unsigned N = 100000; // problem size
 
 
 scoped_array<unsigned> n_per_device; // num_devices elements
@@ -237,7 +235,6 @@ bool init_opencl() {
         n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
     checkError(status, "Failed to create buffer for Results.");
   }
-
   return true;
 }
 
@@ -396,6 +393,8 @@ void run() {
     checkError(status, "Failed to set argument %d", argi - 1);
     status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Results_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
+    status = clSetKernelArg(kernel[i], argi++, sizeof(int), &N);
+    checkError(status, "Failed to set argument %d", argi - 1);
 
     const size_t global_work_size = 1;
     printf("debug: global_work_size: %d\n", global_work_size);
@@ -426,7 +425,7 @@ void run() {
 
   for (int i = 0; i < num_devices; i++)
   {
-    for (int j = 5000000; j < 5000010; j++)
+    for (int j = 0; j < 10; j++)
     {
       printf("Results[%d][%d] = %f\n", i, j, Results[i][j]);
     }

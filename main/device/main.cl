@@ -1,5 +1,5 @@
 #define AGE_GROUP_WIDTH 17
-#define MAX_HOUSEHOLD_SIZE 15
+#define MAX_HOUSEHOLD_SIZE 10
 #define CHUNK_SIZE1 1000
 #define CHUNK_SIZE2 10000
 #define AgeSusceptibility_SIZE 100
@@ -59,7 +59,7 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 
 	for (int c = 0; c < NUMBER_OF_HOUSEHOLDS / CHUNK_SIZE1; c++)
 	{
-		#pragma unroll 10
+		#pragma unroll 20
 		for (int i = 0; i < CHUNK_SIZE1; i++)
 		{
 			int current_person = i + offset1;
@@ -70,7 +70,7 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 			Infectors_cache[i] = Infectors[current_person];
 		}
 
-		#pragma unroll 10
+		#pragma unroll 20
 		for (int i = 0; i < CHUNK_SIZE2; i++)
 		{
 			int current_person = i + offset2;
