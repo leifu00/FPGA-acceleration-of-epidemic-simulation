@@ -31,7 +31,7 @@ endif
 CXXFLAGS += -fstack-protector
 CXXFLAGS += -D_FORTIFY_SOURCE=2
 CXXFLAGS += -Wformat -Wformat-security
-CXXFLAGS += -fPIE
+CXXFLAGS += -fPIE -DUSE_SVM_API=1 -fpermissive
 
 # We must force GCC to never assume that it can shove in its own
 # sse2/sse3 versions of strlen and strcmp because they will CRASH.

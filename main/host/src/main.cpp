@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#define CL_TARGET_OPENCL_VERSION 200
 #include "CL/opencl.h"
 #include "AOCLUtils/aocl_utils.h"
 
@@ -27,42 +28,19 @@ scoped_array<cl_kernel> kernel; // num_devices elements
 
 
 // Basic global structures
-
-
-
-scoped_array<scoped_aligned_ptr<bool> > InfStats; 
-scoped_array<scoped_aligned_ptr<bool> > Travelling; 
-scoped_array<scoped_aligned_ptr<float> > HouseInf; 
-scoped_array<scoped_aligned_ptr<float> > HouseSusc; 
-scoped_array<scoped_aligned_ptr<bool> > Absent; 
-scoped_array<scoped_aligned_ptr<int> > Infectors; 
-scoped_array<scoped_aligned_ptr<float> > WAIFW_Matrix; 
-scoped_array<scoped_aligned_ptr<float> > AgeSusceptibility; 
-scoped_array<scoped_aligned_ptr<int> > Age; 
-scoped_array<scoped_aligned_ptr<float> > Susceptibility; 
-scoped_array<scoped_aligned_ptr<bool> > Treated; 
-scoped_array<scoped_aligned_ptr<bool> > Vaccinated; 
-scoped_array<scoped_aligned_ptr<float> > Results; 
-
-
-scoped_array<cl_mem> InfStats_buf;
-scoped_array<cl_mem> Travelling_buf;
-scoped_array<cl_mem> HouseInf_buf;
-scoped_array<cl_mem> HouseSusc_buf;
-scoped_array<cl_mem> Absent_buf;
-scoped_array<cl_mem> Infectors_buf;
-scoped_array<cl_mem> WAIFW_Matrix_buf;
-scoped_array<cl_mem> AgeSusceptibility_buf;
-scoped_array<cl_mem> Age_buf;
-scoped_array<cl_mem> Susceptibility_buf;
-scoped_array<cl_mem> Treated_buf;
-scoped_array<cl_mem> Vaccinated_buf;
-scoped_array<cl_mem> Results_buf;
-
-
-
-
-
+scoped_array<scoped_SVM_aligned_ptr<bool> > InfStats; 
+scoped_array<scoped_SVM_aligned_ptr<bool> > Travelling; 
+scoped_array<scoped_SVM_aligned_ptr<float> > HouseInf; 
+scoped_array<scoped_SVM_aligned_ptr<float> > HouseSusc; 
+scoped_array<scoped_SVM_aligned_ptr<bool> > Absent; 
+scoped_array<scoped_SVM_aligned_ptr<int> > Infectors; 
+scoped_array<scoped_SVM_aligned_ptr<float> > WAIFW_Matrix; 
+scoped_array<scoped_SVM_aligned_ptr<float> > AgeSusceptibility; 
+scoped_array<scoped_SVM_aligned_ptr<int> > Age; 
+scoped_array<scoped_SVM_aligned_ptr<float> > Susceptibility; 
+scoped_array<scoped_SVM_aligned_ptr<bool> > Treated; 
+scoped_array<scoped_SVM_aligned_ptr<bool> > Vaccinated; 
+scoped_array<scoped_SVM_aligned_ptr<float> > Results; 
 
 
 
@@ -163,19 +141,6 @@ bool init_opencl() {
   kernel.reset(num_devices);
   n_per_device.reset(num_devices);
 
-  InfStats_buf.reset(num_devices);
-  Travelling_buf.reset(num_devices);
-  HouseInf_buf.reset(num_devices);
-  HouseSusc_buf.reset(num_devices);
-  Absent_buf.reset(num_devices);
-  Infectors_buf.reset(num_devices);
-  WAIFW_Matrix_buf.reset(num_devices);
-  AgeSusceptibility_buf.reset(num_devices);
-  Age_buf.reset(num_devices);
-  Susceptibility_buf.reset(num_devices);
-  Treated_buf.reset(num_devices);
-  Vaccinated_buf.reset(num_devices);
-  Results_buf.reset(num_devices);
 
 
   for(unsigned i = 0; i < num_devices; ++i) {
@@ -196,44 +161,6 @@ bool init_opencl() {
     if(i < (N % num_devices)) {
       n_per_device[i]++;
     }
-
-    // Input buffers.
-    InfStats_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool), NULL, &status);
-    checkError(status, "Failed to create buffer for InfStats.");
-    Travelling_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool), NULL, &status);
-    checkError(status, "Failed to create buffer for Travelling.");
-    HouseInf_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float), NULL, &status);
-    checkError(status, "Failed to create buffer for HouseInf.");
-    Absent_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Absent.");
-    Infectors_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(int), NULL, &status);
-    checkError(status, "Failed to create buffer for Infectors.");
-    WAIFW_Matrix_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for WAIFW_Matrix.");
-    AgeSusceptibility_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for AgeSusceptibility.");
-    Age_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(int) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Age.");
-    Susceptibility_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Susceptibility.");
-    Treated_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Treated.");
-    Vaccinated_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Vaccinated.");
-    Results_buf[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, 
-        n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Results.");
   }
   return true;
 }
@@ -276,18 +203,65 @@ void init_problem_with_random_data() {
 
   for (unsigned i = 0; i < num_devices; i++)
   {
-    InfStats[i].reset(n_per_device[i]);
-    Travelling[i].reset(n_per_device[i]);
-    HouseInf[i].reset(n_per_device[i]);    
-    Absent[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);    
-    Infectors[i].reset(n_per_device[i]);
-    WAIFW_Matrix[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    AgeSusceptibility[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Age[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Susceptibility[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Treated[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Vaccinated[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Results[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+    InfStats[i].reset(context, n_per_device[i]);
+    Travelling[i].reset(context, n_per_device[i]);
+    HouseInf[i].reset(context, n_per_device[i]);    
+    Absent[i].reset(context, n_per_device[i] * MAX_HOUSEHOLD_SIZE);    
+    Infectors[i].reset(context, n_per_device[i]);
+    WAIFW_Matrix[i].reset(context, n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+    AgeSusceptibility[i].reset(context, n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+    Age[i].reset(context, n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+    Susceptibility[i].reset(context, n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+    Treated[i].reset(context, n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+    Vaccinated[i].reset(context, n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+    Results[i].reset(context, n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+
+
+    cl_int status;
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)InfStats[i], n_per_device[i] * sizeof(bool), 0, NULL, NULL);
+    checkError(status, "Failed to map input InfStats");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)Travelling[i], n_per_device[i] * sizeof(bool), 0, NULL, NULL);
+    checkError(status, "Failed to map input Travelling");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)HouseInf[i], n_per_device[i] * sizeof(float), 0, NULL, NULL);
+    checkError(status, "Failed to map input HouseInf");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)Absent[i], n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, 0, NULL, NULL);
+    checkError(status, "Failed to map input Absent");
+
+   status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)Infectors[i], n_per_device[i] * sizeof(int), 0, NULL, NULL);
+    checkError(status, "Failed to map input Infectors");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)WAIFW_Matrix[i], n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, 0, NULL, NULL);
+    checkError(status, "Failed to map input WAIFW_Matrix");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)AgeSusceptibility[i], n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, 0, NULL, NULL);
+    checkError(status, "Failed to map input AgeSusceptibility");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)Age[i], n_per_device[i] * sizeof(int) * MAX_HOUSEHOLD_SIZE, 0, NULL, NULL);
+    checkError(status, "Failed to map input Age");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)Susceptibility[i], n_per_device[i] * sizeof(int) * MAX_HOUSEHOLD_SIZE, 0, NULL, NULL);
+    checkError(status, "Failed to map input Susceptibility");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)Treated[i], n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, 0, NULL, NULL);
+    checkError(status, "Failed to map input Treated");
+
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_WRITE,
+        (void *)Vaccinated[i], n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, 0, NULL, NULL);
+    checkError(status, "Failed to map input Vaccinated");
 
     for (unsigned j = 0; j < n_per_device[i]; j++)
     {
@@ -307,8 +281,41 @@ void init_problem_with_random_data() {
       Susceptibility[i][j] = random_float(0.1, 1);
       Treated[i][j] =  false;
       Vaccinated[i][j] = true;
-      Results[i][j] = 0;
     }
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)InfStats[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input InfStats");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)Travelling[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input Travelling");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)HouseInf[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input HouseInf");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)Absent[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input Absent");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)Infectors[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input Infectors");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)WAIFW_Matrix[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input WAIFW_Matrix");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)AgeSusceptibility[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input AgeSusceptibility");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)Age[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input Age");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)Susceptibility[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input Susceptibility");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)Treated[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input Treated");
+
+    status = clEnqueueSVMUnmap(queue[i], (void *)Vaccinated[i], 0, NULL, NULL);
+    checkError(status, "Failed to unmap input Vaccinated");
+
   }
 
 
@@ -326,74 +333,46 @@ void run() {
 
   for(unsigned i = 0; i < num_devices; ++i) {
 
-    unsigned event_count = 12;
-
-    cl_event write_event[event_count];
-    status = clEnqueueWriteBuffer(queue[i], InfStats_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool), InfStats[i], 0, NULL, &write_event[0]);
-    checkError(status, "Fail to transfer InfStats\n");
-    status = clEnqueueWriteBuffer(queue[i], Travelling_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool), Travelling[i], 0, NULL, &write_event[1]);
-    checkError(status, "Fail to transfer Travelling\n");
-    status = clEnqueueWriteBuffer(queue[i], HouseInf_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float), HouseInf[i], 0, NULL, &write_event[2]);
-    checkError(status, "Fail to transfer HouseInf\n");
-    status = clEnqueueWriteBuffer(queue[i], Absent_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, Absent[i], 0, NULL, &write_event[3]);
-    checkError(status, "Fail to transfer Absent\n");
-    status = clEnqueueWriteBuffer(queue[i], Infectors_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(int), Infectors[i], 0, NULL, &write_event[4]);
-    checkError(status, "Fail to transfer Infectors\n");
-    status = clEnqueueWriteBuffer(queue[i], WAIFW_Matrix_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, WAIFW_Matrix[i], 0, NULL, &write_event[5]);
-    checkError(status, "Fail to transfer WAIFW\n");
-    status = clEnqueueWriteBuffer(queue[i], AgeSusceptibility_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, AgeSusceptibility[i], 0, NULL, &write_event[6]);  
-    checkError(status, "Fail to transfer AgeSusceptibility\n");  
-    status = clEnqueueWriteBuffer(queue[i], Age_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(int) * MAX_HOUSEHOLD_SIZE, Age[i], 0, NULL, &write_event[7]);
-    checkError(status, "Fail to transfer Age\n");
-    status = clEnqueueWriteBuffer(queue[i], Susceptibility_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, Susceptibility[i], 0, NULL, &write_event[8]);
-    checkError(status, "Fail to transfer Susceptibility\n");
-    status = clEnqueueWriteBuffer(queue[i], Treated_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, Treated[i], 0, NULL, &write_event[9]);
-    checkError(status, "Fail to transfer Treated\n");
-    status = clEnqueueWriteBuffer(queue[i], Vaccinated_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, Vaccinated[i], 0, NULL, &write_event[10]);
-    checkError(status, "Fail to transfer Vaccinated\n");
-    status = clEnqueueWriteBuffer(queue[i], Results_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, Results[i], 0, NULL, &write_event[11]);
-    checkError(status, "Fail to transfer Results\n");
-
     // Set kernel arguments.
     unsigned argi = 0;
 
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &InfStats_buf[i]);
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)InfStats[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Travelling_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)Travelling[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &HouseInf_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)HouseInf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Absent_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)Absent[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Infectors_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)Infectors[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &WAIFW_Matrix_buf[i]);
-    checkError(status, "Failed to set argument %d", argi - 1);    
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &AgeSusceptibility_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)WAIFW_Matrix[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Age_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)AgeSusceptibility[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Susceptibility_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)Age[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Treated_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)Susceptibility[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Vaccinated_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)Treated[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Results_buf[i]);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)Vaccinated[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(int), &N);
+
+    status = clSetKernelArgSVMPointer(kernel[i], argi++, (void*)Results[i]);
+    checkError(status, "Failed to set argument %d", argi - 1);
+
+   status = clSetKernelArg(kernel[i], argi++, sizeof(int), &N);
     checkError(status, "Failed to set argument %d", argi - 1);
 
     const size_t global_work_size = 1;
@@ -401,22 +380,16 @@ void run() {
     printf("Launching for device %d (%zd elements)\n", i, global_work_size);
 
     status = clEnqueueNDRangeKernel(queue[i], kernel[i], 1, NULL,
-        &global_work_size, NULL, event_count, write_event, &kernel_event[i]);
+        &global_work_size, NULL, 0, NULL, &kernel_event[i]);
       
     checkError(status, "Failed to launch kernel");
 
-    status = clEnqueueReadBuffer(queue[i], Results_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, Results[i], 1, &kernel_event[i], &finish_event[i]);
-
-    for (unsigned k = 0; k < event_count; k++)
-    {
-      clReleaseEvent(write_event[k]);
-    }
+    status = clEnqueueSVMMap(queue[i], CL_TRUE, CL_MAP_READ,
+        (void *)Results[i], n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, 0, NULL, NULL);
+    checkError(status, "Failed to map Results");
+	clFinish(queue[i]);
   }
 
-
-
-  clWaitForEvents(num_devices, finish_event);
 
   const double end_time = getCurrentTimestamp();
 
@@ -435,7 +408,6 @@ void run() {
   // Release all events.
   for(unsigned i = 0; i < num_devices; ++i) {
     clReleaseEvent(kernel_event[i]);    
-    clReleaseEvent(finish_event[i]);
   }
 
 
@@ -451,24 +423,6 @@ void cleanup() {
     }
     if(queue && queue[i]) {
       clReleaseCommandQueue(queue[i]);
-    }
-    if(InfStats_buf && InfStats_buf[i]) {
-      clReleaseMemObject(InfStats_buf[i]);
-    }
-    if(Travelling_buf && Travelling_buf[i]) {
-      clReleaseMemObject(Travelling_buf[i]);
-    }
-    if(HouseInf_buf && HouseInf_buf[i]) {
-      clReleaseMemObject(HouseInf_buf[i]);
-    }
-    if(Absent_buf && Absent_buf[i]) {
-      clReleaseMemObject(Absent_buf[i]);
-    }
-    if(Infectors_buf && Infectors_buf[i]) {
-      clReleaseMemObject(Infectors_buf[i]);
-    }    
-    if(Results_buf && Results_buf[i]) {
-      clReleaseMemObject(Results_buf[i]);
     }
   }
 
