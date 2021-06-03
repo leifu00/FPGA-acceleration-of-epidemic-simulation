@@ -113,8 +113,7 @@ kernel void infect_sweep(global const bool *restrict InfStats,
 		for (int i = 0; i < CHUNK_SIZE2; i++)
 		{
 			int current_person = i + offset2;
-			// Results[current_person] = Results_cache[i];
-			printf("%d, %.3f ", current_person, Results_cache[i]);
+			Results[current_person] = Results_cache[i];
 		}
 
 		offset1 += CHUNK_SIZE1;
