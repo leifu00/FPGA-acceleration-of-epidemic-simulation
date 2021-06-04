@@ -417,12 +417,19 @@ void run() {
 
 
 
-  clWaitForEvents(num_devices, finish_event);
+  clWaitForEvents(num_devices, kernel_event);
 
   const double end_time = getCurrentTimestamp();
 
+  clWaitForEvents(num_devices, finish_event);
+
+  const double buffer_back_time = getCurrentTimestamp();
+
   // Wall-clock time taken.
   printf("\nTime: %0.3f ms\n", (end_time - start_time) * 1e3);
+
+  printf("\nBuffer Back Time: %0.3f ms\n", (buffer_back_time - end_time) * 1e3);
+
 
   for (int i = 0; i < num_devices; i++)
   {
