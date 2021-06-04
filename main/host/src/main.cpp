@@ -317,9 +317,9 @@ void init_problem_with_random_data() {
 }
 
 void run() {
-  const double start_time = getCurrentTimestamp();
   cl_int status;
 
+  const double start_time = getCurrentTimestamp();
 
   // Launch the problem for each device.
   scoped_array<cl_event> kernel_event(num_devices);
@@ -400,6 +400,10 @@ void run() {
     const size_t global_work_size = 1;
     printf("debug: global_work_size: %d\n", global_work_size);
     printf("Launching for device %d (%zd elements)\n", i, global_work_size);
+
+    const double buffer_time = getCurrentTimestamp();
+
+    printf("\nBufferTime: %0.3f ms\n", (buffer_time - start_time) * 1e3);
 
     status = clEnqueueNDRangeKernel(queue[i], kernel[i], 1, NULL,
         &global_work_size, NULL, event_count, write_event, &kernel_event[i]);
