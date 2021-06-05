@@ -1,5 +1,5 @@
 source /data/intel_fpga/devcloudLoginToolSetup.sh
-tools_setup -t S10DS
+tools_setup -t A10DS
 
 # Running project in FPGA Hardware Mode (this takes approximately 1 hour)
 printf "\\n%s\\n" "Running in FPGA Hardware Mode:"
