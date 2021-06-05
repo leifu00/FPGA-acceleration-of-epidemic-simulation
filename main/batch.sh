@@ -1,10 +1,10 @@
 source /data/intel_fpga/devcloudLoginToolSetup.sh
-tools_setup -t A10DS
+tools_setup -t S10DS
 
 # Running project in FPGA Hardware Mode (this takes approximately 1 hour)
 printf "\\n%s\\n" "Running in FPGA Hardware Mode:"
 cd FPGA-acceleration-of-epidemic-simulation/main
-aoc device/main.cl -o bin/main_fpga.aocx -board=pac_a10 -report
+aoc device/main_general.cl -o bin/main_fpga.aocx -board=pac_a10 -report
 
 
 
