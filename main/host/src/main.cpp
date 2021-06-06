@@ -28,44 +28,35 @@ scoped_array<cl_kernel> kernel; // num_devices elements
 
 
 // Basic global structures
+scoped_array<scoped_aligned_ptr<float> > Inf; 
+scoped_array<scoped_aligned_ptr<float> > P_Inf; 
+
+scoped_array<scoped_aligned_ptr<float> > Contact; 
+scoped_array<scoped_aligned_ptr<float> > P_Contact; 
+
+scoped_array<scoped_aligned_ptr<float> > Sus_Positive; 
+scoped_array<scoped_aligned_ptr<float> > P_Sus_Positive; 
+
+scoped_array<scoped_aligned_ptr<float> > Sus_Negative; 
+scoped_array<scoped_aligned_ptr<float> > P_Sus_Negative; 
 
 
-
-scoped_array<scoped_aligned_ptr<bool> > InfStats; 
-scoped_array<scoped_aligned_ptr<bool> > Travelling; 
-scoped_array<scoped_aligned_ptr<float> > HouseInf; 
-scoped_array<scoped_aligned_ptr<float> > HouseSusc; 
-scoped_array<scoped_aligned_ptr<bool> > Absent; 
-scoped_array<scoped_aligned_ptr<int> > Infectors; 
-scoped_array<scoped_aligned_ptr<float> > WAIFW_Matrix; 
-scoped_array<scoped_aligned_ptr<float> > AgeSusceptibility; 
-scoped_array<scoped_aligned_ptr<int> > Age; 
-scoped_array<scoped_aligned_ptr<float> > Susceptibility; 
-scoped_array<scoped_aligned_ptr<bool> > Treated; 
-scoped_array<scoped_aligned_ptr<bool> > Vaccinated; 
-scoped_array<scoped_aligned_ptr<float> > Results; 
+scoped_array<scoped_aligned_ptr<float> > Result;
 
 
-scoped_array<cl_mem> InfStats_buf;
-scoped_array<cl_mem> Travelling_buf;
-scoped_array<cl_mem> HouseInf_buf;
-scoped_array<cl_mem> HouseSusc_buf;
-scoped_array<cl_mem> Absent_buf;
-scoped_array<cl_mem> Infectors_buf;
-scoped_array<cl_mem> WAIFW_Matrix_buf;
-scoped_array<cl_mem> AgeSusceptibility_buf;
-scoped_array<cl_mem> Age_buf;
-scoped_array<cl_mem> Susceptibility_buf;
-scoped_array<cl_mem> Treated_buf;
-scoped_array<cl_mem> Vaccinated_buf;
-scoped_array<cl_mem> Results_buf;
+scoped_array<cl_mem> Inf_buf;
+scoped_array<cl_mem> P_Inf_buf;
 
+scoped_array<cl_mem> Contact_buf;
+scoped_array<cl_mem> P_Contact_buf;
 
+scoped_array<cl_mem> Sus_Positive_buf;
+scoped_array<cl_mem> P_Sus_Positive_buf;
 
+scoped_array<cl_mem> Sus_Negative_buf;
+scoped_array<cl_mem> P_Sus_Negative_buf;
 
-
-
-
+scoped_array<cl_mem> Result_buf;
 
 
 // Problem data.
@@ -107,6 +98,7 @@ int main(int argc, char **argv) {
   // Initialize the problem data.
   // Requires the number of devices to be known.
   init_problem_with_random_data();
+
 
   run();
 
@@ -159,25 +151,25 @@ bool init_opencl() {
   status = clBuildProgram(program, 0, NULL, "", NULL, NULL);
   checkError(status, "Failed to build program");
 
+
   // Create per-device objects.
   queue.reset(num_devices);
   kernel.reset(num_devices);
   n_per_device.reset(num_devices);
 
-  InfStats_buf.reset(num_devices);
-  Travelling_buf.reset(num_devices);
-  HouseInf_buf.reset(num_devices);
-  HouseSusc_buf.reset(num_devices);
-  Absent_buf.reset(num_devices);
-  Infectors_buf.reset(num_devices);
-  WAIFW_Matrix_buf.reset(num_devices);
-  AgeSusceptibility_buf.reset(num_devices);
-  Age_buf.reset(num_devices);
-  Susceptibility_buf.reset(num_devices);
-  Treated_buf.reset(num_devices);
-  Vaccinated_buf.reset(num_devices);
-  Results_buf.reset(num_devices);
+  Inf_buf.reset(num_devices);
+  P_Inf_buf.reset(num_devices);
 
+  Contact_buf.reset(num_devices);
+  P_Contact_buf.reset(num_devices);
+
+  Sus_Positive_buf.reset(num_devices);
+  P_Sus_Positive_buf.reset(num_devices);
+
+  Sus_Negative_buf.reset(num_devices);
+  P_Sus_Negative_buf.reset(num_devices);
+
+  Result_buf.reset(num_devices);
 
   for(unsigned i = 0; i < num_devices; ++i) {
     // Command queue.
@@ -185,7 +177,7 @@ bool init_opencl() {
     checkError(status, "Failed to create command queue");
 
     // Kernel.
-    const char *kernel_name = "infect_sweep";
+    const char *kernel_name = "sweep";
     kernel[i] = clCreateKernel(program, kernel_name, &status);
     checkError(status, "Failed to create kernel");
 
@@ -199,42 +191,42 @@ bool init_opencl() {
     }
 
     // Input buffers.
-    InfStats_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool), NULL, &status);
-    checkError(status, "Failed to create buffer for InfStats.");
-    Travelling_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool), NULL, &status);
-    checkError(status, "Failed to create buffer for Travelling.");
-    HouseInf_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float), NULL, &status);
-    checkError(status, "Failed to create buffer for HouseInf.");
-    Absent_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Absent.");
-    Infectors_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(int), NULL, &status);
-    checkError(status, "Failed to create buffer for Infectors.");
-    WAIFW_Matrix_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for WAIFW_Matrix.");
-    AgeSusceptibility_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for AgeSusceptibility.");
-    Age_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(int) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Age.");
-    Susceptibility_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Susceptibility.");
-    Treated_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Treated.");
-    Vaccinated_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Vaccinated.");
-    Results_buf[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, 
-        n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, NULL, &status);
-    checkError(status, "Failed to create buffer for Results.");
+    Inf_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(float) * 5, NULL, &status);
+    checkError(status, "Failed to create buffer for Inf.");
+    P_Inf_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        5 * sizeof(float), NULL, &status);
+    checkError(status, "Failed to create buffer for P_Inf_buf.");
+    
+
+    Contact_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(float) * 5 * 10, NULL, &status);
+    checkError(status, "Failed to create buffer for Contact_buf.");
+    P_Contact_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        5 * sizeof(float), NULL, &status);
+    checkError(status, "Failed to create buffer for P_Contact_buf.");
+
+
+
+    Sus_Positive_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(float) * 5 * 10, NULL, &status);
+    checkError(status, "Failed to create buffer for Sus_Positive_buf.");
+    P_Sus_Positive_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        5 * sizeof(float), NULL, &status);
+    checkError(status, "Failed to create buffer for P_Sus_Positive_buf.");
+  
+    Sus_Negative_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * sizeof(float) * 5 * 10, NULL, &status);
+    checkError(status, "Failed to create buffer for Sus_Negative_buf.");
+    P_Sus_Negative_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        5 * sizeof(float), NULL, &status);
+    checkError(status, "Failed to create buffer for P_Sus_Negative_buf.");
+
+    Result_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
+        n_per_device[i] * 10 * sizeof(float), NULL, &status);
+    checkError(status, "Failed to create buffer for Result_buf.");
+
+    
   }
   return true;
 }
@@ -260,55 +252,59 @@ void init_problem_with_random_data() {
   }
 
 
-  InfStats.reset(num_devices);
-  Travelling.reset(num_devices);
-  HouseInf.reset(num_devices);
-  Absent.reset(num_devices);
-  Infectors.reset(num_devices);
-  WAIFW_Matrix.reset(num_devices);
-  AgeSusceptibility.reset(num_devices);
-  Age.reset(num_devices);
-  Susceptibility.reset(num_devices);
-  Treated.reset(num_devices);
-  Vaccinated.reset(num_devices);
-  Results.reset(num_devices);
-  
+
+  Inf.reset(num_devices);
+  P_Inf.reset(num_devices);
+
+  Contact.reset(num_devices);
+  P_Contact.reset(num_devices);
+
+  Sus_Positive.reset(num_devices);
+  P_Sus_Positive.reset(num_devices);
+
+  Sus_Negative.reset(num_devices);
+  P_Sus_Negative.reset(num_devices);
+
+  Result.reset(num_devices);
 
 
   for (unsigned i = 0; i < num_devices; i++)
   {
-    InfStats[i].reset(n_per_device[i]);
-    Travelling[i].reset(n_per_device[i]);
-    HouseInf[i].reset(n_per_device[i]);    
-    Absent[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);    
-    Infectors[i].reset(n_per_device[i]);
-    WAIFW_Matrix[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    AgeSusceptibility[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Age[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Susceptibility[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Treated[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Vaccinated[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
-    Results[i].reset(n_per_device[i] * MAX_HOUSEHOLD_SIZE);
+    
+    Result[i].reset(n_per_device[i] * 10);
+    Inf[i].reset(n_per_device[i] * 10);
+    P_Inf[i].reset(5);
 
-    for (unsigned j = 0; j < n_per_device[i]; j++)
+    Contact[i].reset(n_per_device[i] * 10 * 5);
+    P_Contact[i].reset(5);
+
+    Sus_Positive[i].reset(n_per_device[i] * 10 * 5);
+    P_Sus_Positive[i].reset(5);    
+    
+    Sus_Negative[i].reset(n_per_device[i] * 10 * 5);
+    P_Sus_Negative[i].reset(5);
+
+
+
+
+    for (unsigned j = 0; j < 5; j++)
     {
-      InfStats[i][j] = true;
-      Travelling[i][j] = false;
-      HouseInf[i][j] = random_float(0.1, 1);
-      Absent[i][j] = true;
-      Infectors[i][j] = j;
+      P_Inf[i][j] = random_float(0.1, 1);
+      P_Contact[i][j] = random_float(0.1, 1);
+      P_Sus_Positive[i][j] = random_float(0.1, 1);
+      P_Sus_Negative[i][j] = random_float(0.1, 1); 
     }
 
 
-    for (unsigned j = 0; j < n_per_device[i] * MAX_HOUSEHOLD_SIZE; j++)
+    for (unsigned j = 0; j < n_per_device[i] * 10; j++)
     {
-      WAIFW_Matrix[i][j] = random_float(0.1, 1);
-      AgeSusceptibility[i][j] = random_float(0.1, 1);
-      Age[i][j] = random_int(0, 100);
-      Susceptibility[i][j] = random_float(0.1, 1);
-      Treated[i][j] =  false;
-      Vaccinated[i][j] = true;
-      Results[i][j] = 0;
+      Inf[i][j] = random_float(0.1, 1);
+      for (unsigned k = 0; k < 5; k++)
+      {
+        Contact[i][j * 5 + k] = random_float(0.1, 1);
+        Sus_Positive[i][j * 5 + k] = random_float(0.1, 1);
+        Sus_Negative[i][j * 5 + k] = random_float(0.1, 1);
+      }
     }
   }
 
@@ -327,75 +323,76 @@ void run() {
 
   for(unsigned i = 0; i < num_devices; ++i) {
 
-    unsigned event_count = 12;
+    unsigned event_count = 8;
 
     cl_event write_event[event_count];
-    status = clEnqueueWriteBuffer(queue[i], InfStats_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool), InfStats[i], 0, NULL, &write_event[0]);
-    checkError(status, "Fail to transfer InfStats\n");
-    status = clEnqueueWriteBuffer(queue[i], Travelling_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool), Travelling[i], 0, NULL, &write_event[1]);
-    checkError(status, "Fail to transfer Travelling\n");
-    status = clEnqueueWriteBuffer(queue[i], HouseInf_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float), HouseInf[i], 0, NULL, &write_event[2]);
-    checkError(status, "Fail to transfer HouseInf\n");
-    status = clEnqueueWriteBuffer(queue[i], Absent_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, Absent[i], 0, NULL, &write_event[3]);
-    checkError(status, "Fail to transfer Absent\n");
-    status = clEnqueueWriteBuffer(queue[i], Infectors_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(int), Infectors[i], 0, NULL, &write_event[4]);
-    checkError(status, "Fail to transfer Infectors\n");
-    status = clEnqueueWriteBuffer(queue[i], WAIFW_Matrix_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, WAIFW_Matrix[i], 0, NULL, &write_event[5]);
-    checkError(status, "Fail to transfer WAIFW\n");
-    status = clEnqueueWriteBuffer(queue[i], AgeSusceptibility_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, AgeSusceptibility[i], 0, NULL, &write_event[6]);  
-    checkError(status, "Fail to transfer AgeSusceptibility\n");  
-    status = clEnqueueWriteBuffer(queue[i], Age_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(int) * MAX_HOUSEHOLD_SIZE, Age[i], 0, NULL, &write_event[7]);
-    checkError(status, "Fail to transfer Age\n");
-    status = clEnqueueWriteBuffer(queue[i], Susceptibility_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, Susceptibility[i], 0, NULL, &write_event[8]);
-    checkError(status, "Fail to transfer Susceptibility\n");
-    status = clEnqueueWriteBuffer(queue[i], Treated_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, Treated[i], 0, NULL, &write_event[9]);
-    checkError(status, "Fail to transfer Treated\n");
-    status = clEnqueueWriteBuffer(queue[i], Vaccinated_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(bool) * MAX_HOUSEHOLD_SIZE, Vaccinated[i], 0, NULL, &write_event[10]);
-    checkError(status, "Fail to transfer Vaccinated\n");
-    status = clEnqueueWriteBuffer(queue[i], Results_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, Results[i], 0, NULL, &write_event[11]);
-    checkError(status, "Fail to transfer Results\n");
+    status = clEnqueueWriteBuffer(queue[i], Inf_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(float) * 5, Inf[i], 0, NULL, &write_event[0]);
+    checkError(status, "Fail to transfer Inf\n");
 
+    status = clEnqueueWriteBuffer(queue[i], P_Inf_buf[i], CL_FALSE,
+        0, sizeof(float) * 5, Inf[i], 0, NULL, &write_event[1]);
+    checkError(status, "Fail to transfer P_Inf\n");
+
+    status = clEnqueueWriteBuffer(queue[i], Contact_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(float) * 5 * 10, Contact[i], 0, NULL, &write_event[2]);
+    checkError(status, "Fail to transfer Contact\n");
+
+    status = clEnqueueWriteBuffer(queue[i], P_Contact_buf[i], CL_FALSE,
+        0, sizeof(float) * 5, P_Contact[i], 0, NULL, &write_event[3]);
+    checkError(status, "Fail to transfer P_Contact\n");
+  
+    status = clEnqueueWriteBuffer(queue[i], Sus_Positive_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(float) * 5 * 10, Sus_Positive[i], 0, NULL, &write_event[4]);
+    checkError(status, "Fail to transfer Sus_Positive\n");    
+    
+    status = clEnqueueWriteBuffer(queue[i], P_Sus_Positive_buf[i], CL_FALSE,
+        0, sizeof(float) * 5, P_Sus_Positive[i], 0, NULL, &write_event[5]);
+    checkError(status, "Fail to transfer P_Sus_Positive\n");
+
+    status = clEnqueueWriteBuffer(queue[i], Sus_Negative_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(float) * 5 * 10, Sus_Negative[i], 0, NULL, &write_event[6]);
+    checkError(status, "Fail to transfer Sus_Negative\n");
+
+    status = clEnqueueWriteBuffer(queue[i], P_Sus_Negative_buf[i], CL_FALSE,
+        0, sizeof(float) * 5, P_Sus_Negative[i], 0, NULL, &write_event[7]);
+    checkError(status, "Fail to transfer P_Sus_Negative\n");
+
+  
     // Set kernel arguments.
     unsigned argi = 0;
 
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &InfStats_buf[i]);
+     status = clSetKernelArg(kernel[i], argi++, sizeof(int), &N);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Travelling_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Inf_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &HouseInf_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &P_Inf_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Absent_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Contact_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Infectors_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &P_Contact_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &WAIFW_Matrix_buf[i]);
-    checkError(status, "Failed to set argument %d", argi - 1);    
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &AgeSusceptibility_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Sus_Positive_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Age_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &P_Sus_Positive_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Susceptibility_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Sus_Negative_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Treated_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &P_Sus_Negative_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Vaccinated_buf[i]);
+
+    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Result_buf[i]);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(cl_mem), &Results_buf[i]);
-    checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[i], argi++, sizeof(int), &N);
-    checkError(status, "Failed to set argument %d", argi - 1);
+
+   
 
     const size_t global_work_size = 1;
     printf("debug: global_work_size: %d\n", global_work_size);
@@ -410,13 +407,13 @@ void run() {
       
     checkError(status, "Failed to launch kernel");
 
-    status = clEnqueueReadBuffer(queue[i], Results_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * MAX_HOUSEHOLD_SIZE, Results[i], 1, &kernel_event[i], &finish_event[i]);
+    status = clEnqueueReadBuffer(queue[i], Result_buf[i], CL_FALSE,
+        0, n_per_device[i] * sizeof(float) * 10, Result[i], 1, &kernel_event[i], &finish_event[i]);
 
-    for (unsigned k = 0; k < event_count; k++)
-    {
-      clReleaseEvent(write_event[k]);
-    }
+    // for (unsigned k = 0; k < event_count; k++)
+    // {
+    //   clReleaseEvent(write_event[k]);
+    // }
   }
 
 
@@ -425,12 +422,14 @@ void run() {
 
   const double end_time = getCurrentTimestamp();
 
+   // Wall-clock time taken.
+  printf("\nTime: %0.3f ms\n", (end_time - start_time) * 1e3);
+
   clWaitForEvents(num_devices, finish_event);
 
   const double buffer_back_time = getCurrentTimestamp();
 
-  // Wall-clock time taken.
-  printf("\nTime: %0.3f ms\n", (end_time - start_time) * 1e3);
+ 
 
   printf("\nBuffer Back Time: %0.3f ms\n", (buffer_back_time - end_time) * 1e3);
 
@@ -439,7 +438,7 @@ void run() {
   {
     for (int j = 0; j < 10; j++)
     {
-      printf("Results[%d][%d] = %f\n", i, j, Results[i][j]);
+      printf("Result[%d][%d] = %f\n", i, j, Result[i][j]);
     }
   }
 
@@ -464,23 +463,23 @@ void cleanup() {
     if(queue && queue[i]) {
       clReleaseCommandQueue(queue[i]);
     }
-    if(InfStats_buf && InfStats_buf[i]) {
-      clReleaseMemObject(InfStats_buf[i]);
+    if(Inf_buf && Inf_buf[i]) {
+      clReleaseMemObject(Inf_buf[i]);
     }
-    if(Travelling_buf && Travelling_buf[i]) {
-      clReleaseMemObject(Travelling_buf[i]);
+    if(P_Inf_buf && P_Inf_buf[i]) {
+      clReleaseMemObject(P_Inf_buf[i]);
     }
-    if(HouseInf_buf && HouseInf_buf[i]) {
-      clReleaseMemObject(HouseInf_buf[i]);
+    if(Sus_Positive_buf && Sus_Positive_buf[i]) {
+      clReleaseMemObject(Sus_Positive_buf[i]);
     }
-    if(Absent_buf && Absent_buf[i]) {
-      clReleaseMemObject(Absent_buf[i]);
+    if(Sus_Negative_buf && Sus_Negative_buf[i]) {
+      clReleaseMemObject(Sus_Negative_buf[i]);
     }
-    if(Infectors_buf && Infectors_buf[i]) {
-      clReleaseMemObject(Infectors_buf[i]);
+    if(P_Sus_Positive_buf && P_Sus_Positive_buf[i]) {
+      clReleaseMemObject(P_Sus_Positive_buf[i]);
     }    
-    if(Results_buf && Results_buf[i]) {
-      clReleaseMemObject(Results_buf[i]);
+    if(P_Sus_Negative_buf && P_Sus_Negative_buf[i]) {
+      clReleaseMemObject(P_Sus_Negative_buf[i]);
     }
   }
 
