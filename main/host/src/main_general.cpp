@@ -192,34 +192,34 @@ bool init_opencl() {
 
     // Input buffers.
     Inf_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * 5, NULL, &status);
+        n_per_device[i] * sizeof(float) * 10, NULL, &status);
     checkError(status, "Failed to create buffer for Inf.");
     P_Inf_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        5 * sizeof(float), NULL, &status);
+        10 * sizeof(float), NULL, &status);
     checkError(status, "Failed to create buffer for P_Inf_buf.");
     
 
     Contact_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * 5 * 10, NULL, &status);
+        n_per_device[i] * sizeof(float) * 10 * 10, NULL, &status);
     checkError(status, "Failed to create buffer for Contact_buf.");
     P_Contact_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        5 * sizeof(float), NULL, &status);
+        10 * sizeof(float), NULL, &status);
     checkError(status, "Failed to create buffer for P_Contact_buf.");
 
 
 
     Sus_Positive_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * 5 * 10, NULL, &status);
+        n_per_device[i] * sizeof(float) * 10 * 10, NULL, &status);
     checkError(status, "Failed to create buffer for Sus_Positive_buf.");
     P_Sus_Positive_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        5 * sizeof(float), NULL, &status);
+        10 * sizeof(float), NULL, &status);
     checkError(status, "Failed to create buffer for P_Sus_Positive_buf.");
   
     Sus_Negative_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        n_per_device[i] * sizeof(float) * 5 * 10, NULL, &status);
+        n_per_device[i] * sizeof(float) * 10 * 10, NULL, &status);
     checkError(status, "Failed to create buffer for Sus_Negative_buf.");
     P_Sus_Negative_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
-        5 * sizeof(float), NULL, &status);
+        10 * sizeof(float), NULL, &status);
     checkError(status, "Failed to create buffer for P_Sus_Negative_buf.");
 
     Result_buf[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, 
@@ -273,21 +273,21 @@ void init_problem_with_random_data() {
     
     Result[i].reset(n_per_device[i] * 10);
     Inf[i].reset(n_per_device[i] * 10);
-    P_Inf[i].reset(5);
+    P_Inf[i].reset(10);
 
-    Contact[i].reset(n_per_device[i] * 10 * 5);
-    P_Contact[i].reset(5);
+    Contact[i].reset(n_per_device[i] * 10 * 10);
+    P_Contact[i].reset(10);
 
-    Sus_Positive[i].reset(n_per_device[i] * 10 * 5);
-    P_Sus_Positive[i].reset(5);    
+    Sus_Positive[i].reset(n_per_device[i] * 10 * 10);
+    P_Sus_Positive[i].reset(10);    
     
-    Sus_Negative[i].reset(n_per_device[i] * 10 * 5);
-    P_Sus_Negative[i].reset(5);
+    Sus_Negative[i].reset(n_per_device[i] * 10 * 10);
+    P_Sus_Negative[i].reset(10);
 
 
 
 
-    for (unsigned j = 0; j < 5; j++)
+    for (unsigned j = 0; j < 10; j++)
     {
       P_Inf[i][j] = random_float(0.1, 1);
       P_Contact[i][j] = random_float(0.1, 1);
@@ -299,11 +299,11 @@ void init_problem_with_random_data() {
     for (unsigned j = 0; j < n_per_device[i] * 10; j++)
     {
       Inf[i][j] = random_float(0.1, 1);
-      for (unsigned k = 0; k < 5; k++)
+      for (unsigned k = 0; k < 10; k++)
       {
-        Contact[i][j * 5 + k] = random_float(0.1, 1);
-        Sus_Positive[i][j * 5 + k] = random_float(0.1, 1);
-        Sus_Negative[i][j * 5 + k] = random_float(0.1, 1);
+        Contact[i][j * 10 + k] = random_float(0.1, 1);
+        Sus_Positive[i][j * 10 + k] = random_float(0.1, 1);
+        Sus_Negative[i][j * 10 + k] = random_float(0.1, 1);
       }
     }
   }
@@ -327,35 +327,35 @@ void run() {
 
     cl_event write_event[event_count];
     status = clEnqueueWriteBuffer(queue[i], Inf_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * 5, Inf[i], 0, NULL, &write_event[0]);
+        0, n_per_device[i] * sizeof(float) * 10, Inf[i], 0, NULL, &write_event[0]);
     checkError(status, "Fail to transfer Inf\n");
 
     status = clEnqueueWriteBuffer(queue[i], P_Inf_buf[i], CL_FALSE,
-        0, sizeof(float) * 5, Inf[i], 0, NULL, &write_event[1]);
+        0, sizeof(float) * 10, Inf[i], 0, NULL, &write_event[1]);
     checkError(status, "Fail to transfer P_Inf\n");
 
     status = clEnqueueWriteBuffer(queue[i], Contact_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * 5 * 10, Contact[i], 0, NULL, &write_event[2]);
+        0, n_per_device[i] * sizeof(float) * 10 * 10, Contact[i], 0, NULL, &write_event[2]);
     checkError(status, "Fail to transfer Contact\n");
 
     status = clEnqueueWriteBuffer(queue[i], P_Contact_buf[i], CL_FALSE,
-        0, sizeof(float) * 5, P_Contact[i], 0, NULL, &write_event[3]);
+        0, sizeof(float) * 10, P_Contact[i], 0, NULL, &write_event[3]);
     checkError(status, "Fail to transfer P_Contact\n");
   
     status = clEnqueueWriteBuffer(queue[i], Sus_Positive_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * 5 * 10, Sus_Positive[i], 0, NULL, &write_event[4]);
+        0, n_per_device[i] * sizeof(float) * 10 * 10, Sus_Positive[i], 0, NULL, &write_event[4]);
     checkError(status, "Fail to transfer Sus_Positive\n");    
     
     status = clEnqueueWriteBuffer(queue[i], P_Sus_Positive_buf[i], CL_FALSE,
-        0, sizeof(float) * 5, P_Sus_Positive[i], 0, NULL, &write_event[5]);
+        0, sizeof(float) * 10, P_Sus_Positive[i], 0, NULL, &write_event[5]);
     checkError(status, "Fail to transfer P_Sus_Positive\n");
 
     status = clEnqueueWriteBuffer(queue[i], Sus_Negative_buf[i], CL_FALSE,
-        0, n_per_device[i] * sizeof(float) * 5 * 10, Sus_Negative[i], 0, NULL, &write_event[6]);
+        0, n_per_device[i] * sizeof(float) * 10 * 10, Sus_Negative[i], 0, NULL, &write_event[6]);
     checkError(status, "Fail to transfer Sus_Negative\n");
 
     status = clEnqueueWriteBuffer(queue[i], P_Sus_Negative_buf[i], CL_FALSE,
-        0, sizeof(float) * 5, P_Sus_Negative[i], 0, NULL, &write_event[7]);
+        0, sizeof(float) * 10, P_Sus_Negative[i], 0, NULL, &write_event[7]);
     checkError(status, "Fail to transfer P_Sus_Negative\n");
 
   
