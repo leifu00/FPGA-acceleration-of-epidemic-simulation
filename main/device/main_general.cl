@@ -37,14 +37,12 @@ kernel void sweep(global const float *restrict Inf, global const float *restrict
     for (int i = 0; i < N / CHUNK_SIZE; i++)
     {
 
-        #pragma unroll CHUNK_SIZE
         for (int i = 0; i < CHUNK_SIZE * P; i++)
 		{
 			int current_person = i + offset * P;
 			Inf_cache[i] = Inf[current_person];
 		}
 
-        #pragma unroll CHUNK_SIZE
         for (int i = 0; i < CHUNK_SIZE * P * H; i++)
 		{
 			int current_person = i + offset * P * H;
@@ -53,7 +51,6 @@ kernel void sweep(global const float *restrict Inf, global const float *restrict
             Sus_Negative_cache[i] = Sus_Negative[current_person];
 		}
 
-        #pragma unroll 2
         for (int c = 0; c < CHUNK_SIZE; c++)
         {
             float Infectiousness =  1;
