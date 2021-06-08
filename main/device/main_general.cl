@@ -34,6 +34,7 @@ kernel void sweep(global const float *restrict Inf, global const float *restrict
 
 	int offset = 0;
 
+    #pragma unroll 5
     for (int i = 0; i < N / CHUNK_SIZE; i++)
     {
 
