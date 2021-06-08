@@ -37,14 +37,14 @@ kernel void sweep(global const float *restrict Inf, global const float *restrict
     for (int i = 0; i < N / CHUNK_SIZE; i++)
     {
 
-        #pragma unroll CHUNK_SIZE * P
+        #pragma unroll CHUNK_SIZE
         for (int i = 0; i < CHUNK_SIZE * P; i++)
 		{
 			int current_person = i + offset * P;
 			Inf_cache[i] = Inf[current_person];
 		}
 
-        #pragma unroll CHUNK_SIZE * P * N
+        #pragma unroll CHUNK_SIZE
         for (int i = 0; i < CHUNK_SIZE * P * H; i++)
 		{
 			int current_person = i + offset * P * H;
