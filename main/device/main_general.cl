@@ -1,3 +1,8 @@
+#define CHUNK_SIZE 100
+
+#define P 10
+#define H 10
+
 kernel void sweep(global const float *restrict Inf, global const float *restrict P_Inf,
                 global const float *restrict Contact, global const float *restrict P_Contact,
                 global const float *restrict Sus_Positive, global const float *restrict P_Sus_Positive,
@@ -5,45 +10,95 @@ kernel void sweep(global const float *restrict Inf, global const float *restrict
                 global float *restrict Result,
                 const int N)
 {
-    #pragma unroll 5
-    for (int i = 0; i < N; i++)
+
+    local float Inf_cache[CHUNK_SIZE * P];
+    local float Contact_cache[CHUNK_SIZE * H * P];
+    local float Sus_Positive_cache[CHUNK_SIZE * H * P];
+    local float Sus_Negative_cache[CHUNK_SIZE * H * P];
+
+    local float P_Inf_cache[P];
+    local float P_Contact_cache[P];
+    local float P_Sus_Positive_cache[P];
+    local float P_Sus_Negative_cache[P];
+
+
+    local float Result_cache[CHUNK_SIZE * H];
+
+    for (int i = 0; i < P; i++)
     {
-        float Infectiousness =  1;
+        P_Inf_cache[i] = P_Inf[i];
+        P_Contact_cache[i] = P_Contact[i];
+        P_Sus_Positive_cache[i] = P_Sus_Positive[i];
+        P_Sus_Negative_cache[i] = P_Sus_Negative[i];
+    }
 
-        #pragma unroll 10
-        for (int j = 0; j < 10; j++)
+	int offset = 0;
+
+    #pragma unroll 5
+    for (int i = 0; i < N / CHUNK_SIZE; i++)
+    {
+
+        for (int i = 0; i < CHUNK_SIZE * P; i++)
+		{
+			int current_person = i + offset * P;
+			Inf_cache[i] = Inf[current_person];
+		}
+        for (int i = 0; i < CHUNK_SIZE * P * H; i++)
+		{
+			int current_person = i + offset * P * H;
+			Contact_cache[i] = Contact[current_person];
+            Sus_Positive_cache[i] = Sus_Positive[current_person];
+            Sus_Negative_cache[i] = Sus_Negative[current_person];
+		}
+
+        for (int c = 0; c < CHUNK_SIZE; c++)
         {
-            Infectiousness *= (1 + Inf[i * 10 + j] * P_Inf[j]);
-        }
+            float Infectiousness =  1;
 
-        float ContactFactor = 1;
-
-        #pragma unroll 10
-        for (int j = 0; j < 10; j++)
-        {
-            #pragma unroll 10
-            for (int k = 0; k < 10; k++)
+            #pragma unroll P
+            for (int j = 0; j < P; j++)
             {
-                ContactFactor *= Contact[(i * 10 + j) * 10 + k] * P_Contact[k];
+                Infectiousness *= (1 + Inf_cache[c * P + j]) * P_Inf_cache[j];
+            }
+
+            float ContactFactor = 1;
+
+            #pragma unroll H
+            for (int j = 0; j < H; j++)
+            {
+                #pragma unroll P
+                for (int k = 0; k < P; k++)
+                {
+                    ContactFactor *= Contact_cache[(c * H + j) * P + k] * P_Contact_cache[k];
+                }
+            }
+
+            if (ContactFactor > 1) {
+                Infectiousness *= ContactFactor;
+            }
+
+
+            #pragma unroll H
+            for (int j = 0; j < H; j ++)
+            {
+                float FOI = Infectiousness;
+
+                #pragma unroll P
+                for (int k = 0; k < P; k++)
+                {
+                    FOI *= (1 + Sus_Positive_cache[(c * H + j) * P + k] * P_Sus_Positive_cache[k]);
+                    FOI *= (1 - Sus_Negative_cache[(c * H + j) * P + k] * P_Sus_Negative_cache[k]);
+                }
+                Result_cache[j] = FOI;
             }
         }
+        #pragma unroll H
+		for (int i = 0; i < CHUNK_SIZE * H; i++)
+		{
+			int current_person = i + offset * H;
+			Result[current_person] = Result_cache[i];
+		}
 
-        if (ContactFactor > 1) {
-            Infectiousness *= ContactFactor;
-        }
-
-        float FOI = Infectiousness;
-
-        #pragma unroll 10
-        for (int j = 0; j < 10; j ++)
-        {
-            #pragma unroll 10
-            for (int k = 0; k < 10; k++)
-            {
-                FOI *= (1 + Sus_Positive[(i * 10 + j) * 10 + k] * P_Sus_Positive[k]);
-                FOI *= (1 - Sus_Negative[(i * 10 + j) * 10 + k] * P_Sus_Negative[k]);
-            }
-            Result[j] = FOI;
-        }
+        offset += CHUNK_SIZE;
     }
 }
