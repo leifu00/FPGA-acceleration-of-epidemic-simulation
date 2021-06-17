@@ -60,7 +60,7 @@ scoped_array<cl_mem> Result_buf;
 
 
 // Problem data.
-unsigned N = 100000; // problem size
+unsigned N = 10000; // problem size
 
 
 scoped_array<unsigned> n_per_device; // num_devices elements
@@ -434,7 +434,7 @@ void run() {
 
   for (int i = 0; i < num_devices; i++)
   {
-    for (int j = 0; j < 10; j++)
+    for (int j = 1000; j < 1010; j++)
     {
       printf("Result[%d][%d] = %f\n", i, j, Result[i][j]);
     }
